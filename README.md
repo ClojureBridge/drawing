@@ -10,6 +10,10 @@ Emacs - run cider, open `core.clj` and press `C-c C-k` to evaluate the file.
 
 REPL - run `(require 'circles.core)`.
 
+## Examples
+
+- lines: `(require 'circles.lines)`
+
 ## License
 
 Copyright © 2014 FIXME
