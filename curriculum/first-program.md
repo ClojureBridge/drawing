@@ -161,3 +161,11 @@ Here we call the quil `line` function four times. We also call two functions rep
 This is our sketch. You can set attributes of the sketch such as the title and size. You also tell it what are the names of the setup and draw functions. These have to match exactly the function names we used above.
 
 Now press `Ctrl + Shift + Enter` (or `Cmd + Shift + Enter`) to evaluate the file. Your drawing should appear.
+
+### Exercise: More drawing
+Update your drawing so that:
+* the lines are a different color
+* the title is different
+* the lines start at a different place
+
+Bonus: Make each of the four lines a different color.
