@@ -85,4 +85,79 @@ There are a couple of things going on here. First, the `:require` in `ns` tells 
 
 ### Drawing with quil
 
-TODO: fill in the very basics of quil needed for lines.
+Quil is a Clojure library that provides the powers of Processing, a tool that allows you to create drawings and animations. We will use the functions of quil to create some of our own drawings. 
+
+We will define our own functions, like so...
+
+```clojure
+(defn draw []
+   ; Do some things
+   )
+```
+
+... that call functions that quil provides, like so...
+
+```clojure
+   ; Call the quil background function
+   (q/background 240)
+```
+
+Put it together:
+```clojure
+(defn draw []
+   ; Call the quil background function
+   (q/background 240)
+   )
+```
+
+In order to create a drawing (or sketch in quil lingo) with quil, you have to define the `setup`, `draw`, and `sketch` functions. `setup` is where you set the stage for your drawing. `draw` happens repeatedly, so that is where the action of your drawing happens. `sketch` is the stage itself. Let's define these functions together, and you will see what they do.
+
+In Light Table, in the lines.clj file, add the following after the closing parenthesis of the ns statement from before.
+
+```clojure
+(defn setup []
+
+  (q/frame-rate 30) 
+
+  (q/color-mode :rgb)
+
+  (q/stroke 255 0 0)) 
+```
+
+This is the `setup` function that sets the stage for the drawing. First, we call quil's `frame-rate` function to say that the drawing should be redrawn 30 times per second. We put `q/` in front to say that this is `frame-rate` from quil. Look up at the ns statement. Since it says `:as q`, we can use q as a short hand for quil, and `library-name/function-name` is the way you call a function from a library.
+
+Second, we set the color mode to RGB.
+
+Third, we set the color of the lines we will draw with `stroke`. The code 255 0 0 represents red. You can look up RGB codes for other colors if you would like to try something else.
+
+In Light Table, in the lines.clj file, add the following after the closing parenthesis of the setup function.
+
+```clojure
+(defn draw []
+
+  (q/line 0 0 (q/mouse-x) (q/mouse-y))
+
+  (q/line 200 0 (q/mouse-x) (q/mouse-y))
+
+  (q/line 0 200 (q/mouse-x) (q/mouse-y))
+
+  (q/line 200 200 (q/mouse-x) (q/mouse-y)))
+```
+
+Here we call the quil `line` function four times. We also call two functions repeatedly as the arguments to the `line` function: `mouse-x` and `mouse-y`. These get the current position (x and y coordinates on a 2d plane) of the mouse. The `line` function takes four arguments - two sets of x, y coordinates. The first x and y are the starting position of the line. The second x and y are the ending position of the line. So we start each of these lines at a fixed position, then end them wherever the mouse is when the sketch is drawn.
+
+```clojure
+(q/defsketch hello-lines
+
+  :title "You can see lines"
+
+  :size [500 500]
+
+  :setup setup
+
+  :draw draw )
+```
+
+This is our sketch. You can set attributes of the sketch such as the title and size. You also tell it what are the names of the setup and draw functions. These have to match exactly the function names we used above.
+
+Now press `Ctrl + Shift + Enter` (or `Cmd + Shift + Enter`) to evaluate the file. Your drawing should appear.
