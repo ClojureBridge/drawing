@@ -70,7 +70,7 @@ To add a dependency, open `project.clj`. You should see a section which reads
 
 This is where our dependencies are listed. All the dependencies we need for this project are already included.
 
-In order to use these libraries, we have to _require_ them in our own project. See `src/drawing/lines.clj`, for example:
+In order to use these libraries, we have to _require_ them in our own project. In `src/drawing/lines.clj`, edit the ns statement you typed before:
 
 ```clojure
 (ns drawing.lines
@@ -83,9 +83,9 @@ There are a couple of things going on here. First, the `:require` in `ns` tells 
 
 ## Your first real program
 
-### Drawing with quil
+### Drawing with Quil
 
-Quil is a Clojure library that provides the powers of Processing, a tool that allows you to create drawings and animations. We will use the functions of quil to create some of our own drawings. 
+Quil is a Clojure library that provides the powers of Processing, a tool that allows you to create drawings and animations. We will use the functions of Quil to create some of our own drawings. 
 
 We will define our own functions, like so...
 
@@ -95,7 +95,7 @@ We will define our own functions, like so...
    )
 ```
 
-... that call functions that quil provides, like so...
+... that call functions that Quil provides, like so...
 
 ```clojure
    ; Call the quil background function
@@ -110,7 +110,7 @@ Put it together:
    )
 ```
 
-In order to create a drawing (or sketch in quil lingo) with quil, you have to define the `setup`, `draw`, and `sketch` functions. `setup` is where you set the stage for your drawing. `draw` happens repeatedly, so that is where the action of your drawing happens. `sketch` is the stage itself. Let's define these functions together, and you will see what they do.
+In order to create a drawing (or sketch in Quil lingo) with Quil, you have to define the `setup`, `draw`, and `sketch` functions. `setup` is where you set the stage for your drawing. `draw` happens repeatedly, so that is where the action of your drawing happens. `sketch` is the stage itself. Let's define these functions together, and you will see what they do.
 
 In Light Table, in the lines.clj file, add the following after the closing parenthesis of the ns statement from before.
 
