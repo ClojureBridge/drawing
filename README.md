@@ -8,9 +8,10 @@ LightTable - open `lines.clj` and press `Ctrl+Shift+Enter` to evaluate the file.
 
 REPL - run `(require 'drawing.lines)`.
 
-## Examples
+## Curriculum
 
-- lines: `(require 'drawing.lines)`
+* [Making Your First Program with Quil](curriculum/first-program.md)
+
 
 ## License
 
