@@ -1,5 +1,5 @@
-Making Your First Program
-=========================
+Making Your First Program with Quil
+===================================
 
 Now that you know a bit about how to write Clojure code, let's look at how to create a standalone application.
 
@@ -162,7 +162,7 @@ This is our sketch. You can set attributes of the sketch such as the title and s
 
 Now press `Ctrl + Shift + Enter` (or `Cmd + Shift + Enter`) to evaluate the file. Your drawing should appear.
 
-### Exercise: More drawing
+### Exercise: Rainbow lines 
 Update your drawing so that:
 * the lines are a different color
 * the title is different
