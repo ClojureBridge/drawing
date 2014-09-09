@@ -1,4 +1,4 @@
-(ns circles.core
+(ns drawing.core
   (:require [quil.core :as q]
             [quil.middleware :as m]))
 

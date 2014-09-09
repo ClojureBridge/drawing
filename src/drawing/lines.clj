@@ -1,4 +1,4 @@
-(ns circles.lines
+(ns drawing.lines
   (:require [quil.core :as q]))
 
 (defn setup []

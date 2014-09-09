@@ -1,22 +1,20 @@
-# circles
+# drawing 
 
-A Quil sketch designed to ... well, that part is up to you.
+ClojureBridge capstone app using Quil to draw.
 
 ## Usage
 
-LightTable - open `core.clj` and press `Ctrl+Shift+Enter` to evaluate the file.
+LightTable - open `lines.clj` and press `Ctrl+Shift+Enter` to evaluate the file.
 
-Emacs - run cider, open `core.clj` and press `C-c C-k` to evaluate the file.
-
-REPL - run `(require 'circles.core)`.
+REPL - run `(require 'drawing.lines)`.
 
 ## Examples
 
-- lines: `(require 'circles.lines)`
+- lines: `(require 'drawing.lines)`
 
 ## License
 
-Copyright © 2014 FIXME
+Copyright © 2014 ClojureBridge
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
