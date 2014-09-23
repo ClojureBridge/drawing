@@ -169,3 +169,4 @@ Update your drawing so that:
 * the lines start at a different place
 
 Bonus: Make each of the four lines a different color.
+Bonus #2: Change the color of the lines based on the mouse position.
