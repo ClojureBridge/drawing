@@ -135,14 +135,14 @@ When Clara ran this code, she saw this image:
 Woohoo! She made it!
 
 
-## Step 2. make nowflake falling down
+## Step 2. Snowflake falls down
 
 Clara was satisfied with the image, white snowflake on the blue background.
 However, that was boring.
 Next, she wanted to move the snowflake like falling down.
 This needed further Quil API study and googling.
 Moving some pices in the image is called "animation".
-She learned Quil had two choices, a legacy, simple way and new style using framework.
+She learned Quil had two choces, a legacy, simple way and new style using framework.
 Her choice was the new framework style since coding looked simple.
 
 
@@ -154,7 +154,7 @@ Clara read the document [Functional mode (fun mode)](https://github.com/quil/qui
 2. `:middleware [m/fun-mode]` in `q/defsketch` form
 
 
-At this moment, the `practice.clj` looks like this:
+At this moment, the code looks like this:
 
 ```clojure
 (ns drawing.practice
@@ -201,8 +201,8 @@ In terms of programming, 'moving the snowflake like falling down' means:
 4. draw background, then snowflake
 5. repeat 2 and 3, increasing y parameter
 
-In her application, the "changing state" is the y parameter only.
-How she could increment y value by one?
+In her application, the changing state is a y parameter.
+By the way, how she could increment y value by one?
 Yes, Clojure has `inc` function. This is the one she used.
 
 Here's what she did:
@@ -213,7 +213,7 @@ Here's what she did:
 4. add `update` function in `q/defsketch` form
 
 
-At this moment, the `practice.clj` looks like this:
+At this moment, the code looks like this:
 
 ```clojure
 (ns drawing.practice
@@ -253,23 +253,23 @@ At this moment, the `practice.clj` looks like this:
 When Clara ran this code, hey, she saw the snowflake was faliing down.
 
 
-## Step 3. make the nowflake keeps falling down from top to bottom
+## Step 3. Snowflake keeps falling down from top to bottom
 
-Clara got a nice Quil app. But, once the snowfake went down beyond the bottom line,
-that's it. Just a blue background stayed there.
+Clara got a nice Quil app. But, once snowfake goes down beyond the bottom line,
+that's it. Just a blue background stays there.
 So, she wanted it to repeat again and again.
-In another word, if the snowfake reaches the bottom, it should come back to the top.
-Then, it falls down again.
+In another word, if snowfake reaches the bottom, it should come back to the top.
+Then, it can fall down.
 
 In terms of programming, what does that mean?
 If the `state`(y parameter) is greater than the hight of the image,
 `state` will be back to 0.
-Otherwise, the `state` will be incremented by one.
+Otherwise, the `state` will be increased by one.
 
 OK, Clara learned `if`, which is used for flow control at ClojureBridge workshop, [Flow Control](https://github.com/ClojureBridge/curriculum/blob/master/outline/flow_control.md).
-So, she used `if` to make it back to the top.
+So, she used `if` to realize that feature.
 
-At this momment, the `practice.clj` looks like this:
+At this momment, the code looks like this:
 
 ```clojure
 (ns drawing.practice
@@ -311,14 +311,14 @@ At this momment, the `practice.clj` looks like this:
 Clara saw the snowfake appeared from the top after it went down blow the bottom line.
 
 
-## Step 4. make more snowflakes keep falling down from top to bottom
+## Step 4. A few snowflakes keep falling down from top to bottom
 
 Looking at the snowflake falling down many times is nice.
 But, Clara thought she wanted to see more snowflakes falling down,
 one or more on the left half, also one or more on the right half.
 
 Again, she needed to think by the words of programming.
-It would be "draw mutiple images with the different x parameters."
+It would be "draw mutiple images on the different x parameters."
 The easiest way is copy pasting `(q/image @flake 400 state)` mutiple times with the different x parameters.
 For example:
 
@@ -330,18 +330,17 @@ For example:
 
 But, for Clara, this looked not nice since she learned a lot about Clojure and wanted to use what she knew.
 
-Well, firstly, she thought about how to keep multiple x parameters.
-She remembered there was a `vector` in [Data Structure](https://github.com/ClojureBridge/curriculum/blob/master/outline/data_structures.md) section,
-which looked a good fit in this case.
+Well, firstly, she thought about how to keep multiple x positions.
+She remembered there was a `vector`, [Data Structure](https://github.com/ClojureBridge/curriculum/blob/master/outline/data_structures.md), which looked a good fit in this case.
 
 Here's what she did for multiple snowfakes:
 
 1. add vector which has multiple x parameters with `def`
 2. draw snowflakes as many times as the number of x-params using `doseq`.
 
-* See, [doseq](http://clojuredocs.org/clojure.core/doseq) for more info.
+See, [doseq](http://clojuredocs.org/clojure.core/doseq)
 
-At this moment, the `practice.clj` looks like this:
+At this moment, the code looks like this:
 
 ```clojure
 (ns drawing.practice
@@ -385,12 +384,12 @@ At this moment, the `practice.clj` looks like this:
 Yeah, Clara saw three snowfalkes kept falling down.
 
 
-## Step 5. make snowflakes keep falling down from differently
+## Step 5. A few snowflakes keep falling down from different start positions
 
 So far, so good.
 But, Clara felt something not quite right.
 All three snowflakes fell down simultaneously, which would not look like natural.
-So, she wanted to make them falling down differently, more natural way.
+So, she wanted to make them falling down differently. more natural way.
 
 Using the words of programming,
 the problem here is all three snowflakes share the same y parameter.
@@ -399,10 +398,10 @@ Obviously, adding multiple y values would solve the problem.
 The question is how?
 
 As she used `vector` for x parameters, the `vector` is a good data structure for y parameters as well.
-But, not just the height, Clara wanted to change the speed of falling down in each snowflake.
+Not just the height, Clara wanted to change the speed of falling down.
 So, she looked at the ClojureBridge curriculum,
-[More Data Structures](https://github.com/ClojureBridge/curriculum/blob/master/outline/data_structures2.md), and found `Maps` section.
-Then, she changed the `state` form a single value to a vector of 3 maps.
+[More Data Structures](https://github.com/ClojureBridge/curriculum/blob/master/outline/data_structures2.md), and found `Maps`.
+Then, she changed the `state` form value to a vector of 3 maps.
 
 ```clojure
 [{:y 10 :speed 1} {:y 300 :speed 5} {:y 100 :speed 3}]
