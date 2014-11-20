@@ -13,20 +13,19 @@
    (ref-set background (q/load-image "images/blue_background.png")))
   (q/smooth)
   (q/frame-rate 60)
-  [{:y 10 :speed 1} {:y 300 :speed 5} {:y 100 :speed 3}])
+  10)
 
 (defn update [state]
-  (for [p state]
-    (if (>= (:y p) (q/height)) ;; y is greater than or equal to image height?
-      (assoc p :y 0)                      ;; true - get it back to the 0 (top)
-      (assoc p :y (+ (:y p) (:speed p)))) ;; false - increment y paraemter by one
+  (if (>= state (q/height)) ;; state is greater than or equal to image height?
+    0                       ;; true - get it back to the 0 (top)
+    (inc state)             ;; false - increment y paraemter by one
     ))
 
 (defn draw [state]
   ;; drawing blue background and mutiple snowflakes on it
   (q/background-image @background)
-  (dotimes [n 3]
-    (q/image @flake (nth x-params n) (:y (nth state n)))))
+  (doseq [x x-params]
+    (q/image @flake x state)))
 
 (q/defsketch practice
   :title "Clara's Quil practice"

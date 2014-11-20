@@ -289,11 +289,10 @@ At this momment, the code looks like this:
   10)
 
 (defn update [state]
-  (if (>= state (q/height))
-    0           ;; get it back to the 0 (top)
-    (inc state) ;; updating y paraemter by one
-    )
-  )
+  (if (>= state (q/height))  ;; state is greater than or equal to image height?
+    0                        ;; true - get it back to the 0 (top)
+    (inc state)              ;; false - increment y paraemter by one
+    ))
 
 (defn draw [state]
   ;; drawing blue background and a snowflake on it
@@ -310,4 +309,180 @@ At this momment, the code looks like this:
 ```
 
 Clara saw the snowfake appeared from the top after it went down blow the bottom line.
+
+
+## Step 4. A few snowflakes keep falling down from top to bottom
+
+Looking at the snowflake falling down many times is nice.
+But, Clara thought she wanted to see more snowflakes falling down,
+one or more on the left half, also one or more on the right half.
+
+Again, she needed to think by the words of programming.
+It would be "draw mutiple images on the different x parameters."
+The easiest way is copy pasting `(q/image @flake 400 state)` mutiple times with the different x parameters.
+For example:
+
+```clojure
+(q/image @flake 150 state)
+(q/image @flake 400 state)
+(q/image @flake 650 state)
+```
+
+But, for Clara, this looked not nice since she learned a lot about Clojure and wanted to use what she knew.
+
+Well, firstly, she thought about how to keep multiple x positions.
+She remembered there was a `vector`, [Data Structure](https://github.com/ClojureBridge/curriculum/blob/master/outline/data_structures.md), which looked a good fit in this case.
+
+Here's what she did for multiple snowfakes:
+
+1. add vector which has multiple x parameters with `def`
+2. draw snowflakes as many times as the number of x-params using `doseq`.
+
+See, [doseq](http://clojuredocs.org/clojure.core/doseq)
+
+At this moment, the code looks like this:
+
+```clojure
+(ns drawing.practice
+  (:require [quil.core :as q]
+            [quil.middleware :as m]))
+
+(def flake (ref nil))        ;; reference to snowflake image
+(def background (ref nil))   ;; reference to blue background image
+(def x-params [100 400 700]) ;; x parameters for three snowflakes
+
+(defn setup []
+  ;; loading two images
+  (dosync
+   (ref-set flake (q/load-image "images/white_flake.png"))
+   (ref-set background (q/load-image "images/blue_background.png")))
+  (q/smooth)
+  (q/frame-rate 60)
+  10)
+
+(defn update [state]
+  (if (>= state (q/height)) ;; state is greater than or equal to image height?
+    0                       ;; true - get it back to the 0 (top)
+    (inc state)             ;; false - increment y paraemter by one
+    ))
+
+(defn draw [state]
+  ;; drawing blue background and mutiple snowflakes on it
+  (q/background-image @background)
+  (doseq [x x-params]
+    (q/image @flake x state)))
+
+(q/defsketch practice
+  :title "Clara's Quil practice"
+  :size [1000 1000]
+  :setup setup
+  :update update
+  :draw draw
+  :middleware [m/fun-mode])
+```
+
+Yeah, Clara saw three snowfalkes kept falling down.
+
+
+## Step 5. A few snowflakes keep falling down from different start positions
+
+So far, so good.
+But, Clara felt something not quite right.
+All three snowflakes fell down simultaneously, which would not look like natural.
+So, she wanted to make them falling down differently. more natural way.
+
+Using the words of programming,
+the problem here is all three snowflakes share the same y parameter.
+
+Obviously, adding multiple y values would solve the problem.
+The question is how?
+
+As she used `vector` for x parameters, the `vector` is a good data structure for y parameters as well.
+Not just the height, Clara wanted to change the speed of falling down.
+So, she looked at the ClojureBridge curriculum,
+[More Data Structures](https://github.com/ClojureBridge/curriculum/blob/master/outline/data_structures2.md), and found `Maps`.
+Then, she changed the `state` form value to a vector of 3 maps.
+
+```clojure
+[{:y 10 :speed 1} {:y 300 :speed 5} {:y 100 :speed 3}]
+```
+
+It was a nice data structure.
+However, her `update` function was no more that simple.
+She needed to update all y values in the three maps.
+Ok, she already learned how to get and update the values in the map.
+There was a `assoc` function, which will change the value in a map.
+[More Functions](https://github.com/ClojureBridge/curriculum/blob/master/outline/functions2.md).
+(See [http://clojuredocs.org/clojure.core/assoc](http://clojuredocs.org/clojure.core/assoc) for more info)
+
+To iterate over the all element in the vector, Clojure has a few functions.
+But, be careful.
+`update` function must return updated state.
+So, she used `for` for updating the state like this:
+
+```clojure
+(for [p state]
+  (if (>= (:y p) (q/height))
+    (assoc p :y 0)
+    (assoc p :y (+ (:y p) (:speed p))))
+  )
+```
+
+Another challenge was a `draw` function.
+Clara found a couple of ways to repeat in Clojure.
+Among them, she chose `dotimes` and `nth` to repeatedly draw images.
+The `nth` is the one in 
+[More Functions](https://github.com/ClojureBridge/curriculum/blob/master/outline/functions2.md)
+
+In this case, she knew there were exactly 3 snowflakes, so she changed the code to draw 3 snowflakes as in blow:
+
+```clojure
+(dotimes [n 3]
+    (q/image @flake (nth x-params n) (:y (nth state n))))
+```
+
+At this moment, her entire `practice.clj` looks like this:
+
+```clojure
+(ns drawing.practice
+  (:require [quil.core :as q]
+            [quil.middleware :as m]))
+
+(def flake (ref nil))        ;; reference to snowflake image
+(def background (ref nil))   ;; reference to blue background image
+(def x-params [100 400 700]) ;; x parameters for three snowflakes
+
+(defn setup []
+  ;; loading two images
+  (dosync
+   (ref-set flake (q/load-image "images/white_flake.png"))
+   (ref-set background (q/load-image "images/blue_background.png")))
+  (q/smooth)
+  (q/frame-rate 60)
+  [{:y 10 :speed 1} {:y 300 :speed 5} {:y 100 :speed 3}])
+
+(defn update [state]
+  (for [p state]
+    (if (>= (:y p) (q/height)) ;; y is greater than or equal to image height?
+      (assoc p :y 0)                      ;; true - get it back to the 0 (top)
+      (assoc p :y (+ (:y p) (:speed p)))) ;; false - increment y paraemter by one
+    ))
+
+(defn draw [state]
+  ;; drawing blue background and mutiple snowflakes on it
+  (q/background-image @background)
+  (dotimes [n 3]
+    (q/image @flake (nth x-params n) (:y (nth state n)))))
+
+(q/defsketch practice
+  :title "Clara's Quil practice"
+  :size [1000 1000]
+  :setup setup
+  :update update
+  :draw draw
+  :middleware [m/fun-mode])
+```
+
+When she ran the code above, three snowflakes kept falling down in different speeds.
+It looked more natural.
 
