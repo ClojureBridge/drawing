@@ -11,30 +11,14 @@
    (ref-set flake (q/load-image "images/white_flake.png"))
    (ref-set background (q/load-image "images/blue_background.png")))
   (q/smooth)
-  (q/frame-rate 30)
-  [{:x 100 :swing 10 :y 10 :speed 8}
-   {:x 400 :swing 5 :y 300 :speed 11}
-   {:x 700 :swing 8 :y 100 :speed 9}])
-
-(defn update-x
-  [x swing]
-  (let [start (- x swing)
-        end (+ x swing)
-        new-x (+ start (rand-int (- end start)))]
-    (cond
-     (> 0 new-x) (q/width)
-     (< (q/width) new-x) 0
-     :else new-x )))
-
-(defn update-y
-  [y speed]
-  (if (>= y (q/height)) ;; y is greater than or equal to image height?
-    0                   ;; true - get it back to the 0 (top)
-    (+ y speed)))       ;; false - add a value of speed
+  (q/frame-rate 60)
+  [{:x 100 :y 10 :speed 1} {:x 400 :y 300 :speed 5} {:x 700 :y 100 :speed 3}])
 
 (defn update [state]
   (for [p state]
-    (merge p {:x (update-x (:x p) (:swing p)) :y (update-y (:y p) (:speed p))})
+    (if (>= (:y p) (q/height)) ;; y is greater than or equal to image height?
+      (assoc p :y 0)                      ;; true - get it back to the 0 (top)
+      (assoc p :y (+ (:y p) (:speed p)))) ;; false - add a value of speed
     ))
 
 (defn draw [state]

@@ -567,3 +567,149 @@ At this moment, her entire `practice.clj` looks like this:
 She saw the exactly the same result as the previous code, but her code looked nicer.
 This sort of work is often called "refatoring".
 
+
+## Step 7. make snowflakes swing as they fall down
+
+Clara was getting familiar with Clojure coding.
+Her Quil app was getting much better as well.
+But, looking at snowflakes falling down, she thought she could swing them left adn right as they fall down.
+Right now, all snowflakes were falling down straight forward.
+
+In the words of programming,
+x parameter should both increase and descrease when the value is updated.
+This means `update` function should update x parameters as well as y parameters.
+
+To realize this feature, she changed the initial state like this:
+
+```clojure
+[{:x 100 :swing 10 :y 10 :speed 8}
+ {:x 400 :swing 5 :y 300 :speed 11}
+ {:x 700 :swing 8 :y 100 :speed 9}]
+```
+The map got a new `:swing` key, which holds a range of left and right from a current position.
+This means the updated x parameter will have between current x parameter + swing and current x parameter - swing. For example, the first snowflake's next x parameter will be between 100 + 10 and 100 - 10.
+
+To update x parameter by a random value between some range, she needed to do something not just using existing clojure functions.
+She found [`rand-int`](http://clojuredocs.org/clojure.core/rand-int) from [Clojure Cheat Sheet](http://clojure.org/cheatsheet), but it only returned between 0 and specified value. Googling led her to this clojure code
+(from [https://github.com/sjl/roul/blob/master/src/roul/random.clj](https://github.com/sjl/roul/blob/master/src/roul/random.clj):
+
+```clojure
+(defn rand-int
+  "Return a random int between start (inclusive) and end (exclusive).
+  start defaults to 0
+  "
+  ([end] (clojure.core/rand-int end))
+  ([start end] (+ start (clojure.core/rand-int (- end start)))))
+```
+
+This was the random generation function what she wanted. But, she wanted a bit more.
+When the value goes to less than 0, it should take the value close to the image width, so that the snowflake will appear from the right. Likewise, the value goes more than the image width, it should have 0 so that the snowflake will appear from the left.
+She couldn't use `if` anymore since `if` takes only one predicate (comparison).
+Instead of `if`, she used `cond` and wrote `update-x` funcion.
+
+```clojure
+(defn update-x
+  [x swing]
+  (let [start (- x swing)
+        end (+ x swing)
+        new-x (+ start (rand-int (- end start)))]
+    (cond
+     (> 0 new-x) (q/width)
+     (< (q/width) new-x) 0
+     :else new-x )))
+```
+
+This `update-x` function hinted her she could refactor update function and write `update-y` function. The below is the `update-y` function.
+
+```clojure
+(defn update-y
+  [y speed]
+  (if (>= y (q/height))
+    0
+    (+ y speed)))
+```
+
+Lastly, she rewrote `update` function.
+She could still use `assoc`, but it will be like this:
+
+```
+(assoc (assoc p :y (update-y (:y p) (:speed p))) :x (update-x (:x p) (:swing p)))
+```
+
+She remembered that there was another function for map. It was `merge` appeared in [More Functions](https://github.com/ClojureBridge/curriculum/blob/master/outline/functions2.md).
+Using `merge`, her `update` function turned to like this:
+
+```clojure
+(defn update [state]
+  (for [p state]
+    (merge p {:x (update-x (:x p) (:swing p)) :y (update-y (:y p) (:speed p))})))
+```
+
+At this momenet, her entire `practice.clj` looks like this:
+
+```clojure
+(ns drawing.practice
+  (:require [quil.core :as q]
+            [quil.middleware :as m]))
+
+(def flake (ref nil))        ;; reference to snowflake image
+(def background (ref nil))   ;; reference to blue background image
+
+(defn setup []
+  ;; loading two images
+  (dosync
+   (ref-set flake (q/load-image "images/white_flake.png"))
+   (ref-set background (q/load-image "images/blue_background.png")))
+  (q/smooth)
+  (q/frame-rate 30)
+  [{:x 100 :swing 10 :y 10 :speed 8}
+   {:x 400 :swing 5 :y 300 :speed 11}
+   {:x 700 :swing 8 :y 100 :speed 9}])
+
+(defn update-x
+  [x swing]
+  (let [start (- x swing)
+        end (+ x swing)
+        new-x (+ start (rand-int (- end start)))]
+    (cond
+     (> 0 new-x) (q/width)
+     (< (q/width) new-x) 0
+     :else new-x )))
+
+(defn update-y
+  [y speed]
+  (if (>= y (q/height)) ;; y is greater than or equal to image height?
+    0                   ;; true - get it back to the 0 (top)
+    (+ y speed)))       ;; false - add a value of speed
+
+(defn update [state]
+  (for [p state]
+    (merge p {:x (update-x (:x p) (:swing p)) :y (update-y (:y p) (:speed p))})))
+
+(defn draw [state]
+  ;; drawing blue background and mutiple snowflakes on it
+  (q/background-image @background)
+  (dotimes [n 3]
+    (let [snowflake (nth state n)]
+      (q/image @flake (:x snowflake) (:y snowflake)))))
+
+(q/defsketch practice
+  :title "Clara's Quil practice"
+  :size [1000 1000]
+  :setup setup
+  :update update
+  :draw draw
+  :middleware [m/fun-mode])
+```
+
+(frame-rate has been changed to 30)
+
+When Clara ran this code, she saw snowflakes were falling down swinging left and right randomly.
+
+
+Still there were a couple of problems as well as rooms for refactoring,
+Clara was satified with her app;
+however, she started thinking her next more advanced app in Clojure.
+
+
+The end.
