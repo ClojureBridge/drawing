@@ -591,7 +591,7 @@ This means the updated x parameter will have between current x parameter + swing
 
 To update x parameter by a random value between some range, she needed to do something not just using existing clojure functions.
 She found [`rand-int`](http://clojuredocs.org/clojure.core/rand-int) from [Clojure Cheat Sheet](http://clojure.org/cheatsheet), but it only returned between 0 and specified value. Googling led her to this clojure code
-(from [https://github.com/sjl/roul/blob/master/src/roul/random.clj](https://github.com/sjl/roul/blob/master/src/roul/random.clj):
+(from [https://github.com/sjl/roul/blob/master/src/roul/random.clj](https://github.com/sjl/roul/blob/master/src/roul/random.clj) ):
 
 ```clojure
 (defn rand-int
@@ -603,8 +603,8 @@ She found [`rand-int`](http://clojuredocs.org/clojure.core/rand-int) from [Cloju
 ```
 
 This was the random generation function what she wanted. But, she wanted a bit more.
-When the value goes to less than 0, it should take the value close to the image width, so that the snowflake will appear from the right. Likewise, the value goes more than the image width, it should have 0 so that the snowflake will appear from the left.
-She couldn't use `if` anymore since `if` takes only one predicate (comparison).
+When the value goes to less than 0, it should take the value of the image width so that the snowflake will appear from the right. Likewise, the value goes more than the image width, it should have 0 so that the snowflake will appear from the left.
+She couldn't use `if` anymore here since `if` takes only one predicate (comparison).
 Instead of `if`, she used `cond` and wrote `update-x` funcion.
 
 ```clojure
@@ -630,13 +630,13 @@ This `update-x` function hinted her she could refactor update function and write
 ```
 
 Lastly, she rewrote `update` function.
-She could still use `assoc`, but it will be like this:
+She could still use `assoc`, but it would be like this:
 
 ```
 (assoc (assoc p :y (update-y (:y p) (:speed p))) :x (update-x (:x p) (:swing p)))
 ```
 
-She remembered that there was another function for map. It was `merge` appeared in [More Functions](https://github.com/ClojureBridge/curriculum/blob/master/outline/functions2.md).
+She remembered that there was another function for map. It was `merge`, which was appeared in [More Functions](https://github.com/ClojureBridge/curriculum/blob/master/outline/functions2.md).
 Using `merge`, her `update` function turned to like this:
 
 ```clojure
@@ -708,8 +708,8 @@ When Clara ran this code, she saw snowflakes were falling down swinging left and
 
 
 Still there were a couple of problems as well as rooms for refactoring,
-Clara was satified with her app;
-however, she started thinking her next more advanced app in Clojure.
+Clara was satified with her app.
+Moreover, she started thinking her next more advanced app in Clojure.
 
 
 The end.
