@@ -11,6 +11,7 @@ REPL - run `(require 'drawing.lines)`.
 ## Curriculum
 
 * [Making Your First Program with Quil](curriculum/first-program.md)
+* [I Want to Create Something Cool with QUil! (pt. 2)] (curriculum/create-something.md)
 
 
 ## License
