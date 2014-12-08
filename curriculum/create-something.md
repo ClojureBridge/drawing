@@ -24,7 +24,7 @@ and found the [Loading and Displaying](http://quil.info/api/image/loading-and-di
 Then, she googled and found a StackOverflow question,
 [Load/display image in clojure with quil](http://stackoverflow.com/questions/18714941/load-display-image-in-clojure-with-quil), which looked like what she needed.
 
-Those gave her enough information to accomplish the step 1.
+Those gave her enough information to accomplish step 1.
 
 At the ClojureBridge workshop, Clara went though the Quil app tutorial,
 [Making Your First Program with Quil](https://github.com/ClojureBridge/drawing/blob/master/curriculum/first-program.md), so she already had the `drawing` Clojure project.
@@ -48,7 +48,8 @@ At this point, her directory structure looks like the below:
 
 ### make the source code clojure-ish
 
-First, Clojure source code has a namspace declaration, so Clara copy-pasted `ns` form from the `lines.clj` file. But, she changed the name from `drawing.lines` to `drawing.practice` because her file name has the name `practice`.
+First, Clojure source code has a namespace declaration, so Clara copy-pasted `ns` from the top of her `lines.clj` file. But, she changed the name from `drawing.lines` to `drawing.practice`, because her new file has the name `practice`.
+
 At this moment, `practice.clj` looks like this:
 
 ```clojure
@@ -58,9 +59,9 @@ At this moment, `practice.clj` looks like this:
 
 ### add basic Quil code
 
-The basic Quil code has `setup` and `draw` functions and the `defsketch` macro which defines the app. 
-Following the Quil rule, Clara added those basic things into her `practice.clj`.
-At this point, `practice.clj` looks like this:
+Basic Quil code has `setup` and `draw` functions, along with a `defsketch` macro, which defines the app. Following these Quil rules, Clara added those things into her `practice.clj`.
+
+Now, `practice.clj` looks like this:
 
 ```clojure
 (ns drawing.practice
@@ -80,9 +81,9 @@ At this point, `practice.clj` looks like this:
 
 ### load snowflake and background images
 
-Looking at the Quil API and the StackOverflow question, Clara learned that where to put those image files was important.
-She created a new directory, `images`, under the top `drawing` directory and put two images there.
-At this moment, her directory structure looks like the below:
+Looking at the Quil API and the StackOverflow question, Clara learned that where to put her image files was important. She created a new directory, `images`, under the top `drawing` directory, and she and put two images there.
+
+Now, her directory structure looks like the one below:
 
 ```
 | LICENSE
@@ -98,9 +99,10 @@ At this moment, her directory structure looks like the below:
 | | white_flake.png
 ```
 
-Well, since the images were ready, it was time to code using the Quil API.
-Clara added a few lines of code to the `setup` and `draw` functions in `practice.clj` to load and draw two images.
-She was careful when writing the image filenames because it should reflect the actual directory structure.
+Since the images were ready, it was time to code using the Quil API.
+
+Clara added a few lines of code to the `setup` and `draw` functions in `practice.clj` to load and draw two images. She was careful when writing the image filenames because it should reflect the actual directory structure.
+
 At this moment, `practice.clj` looks like this:
 
 ```clojure
@@ -137,24 +139,24 @@ Woohoo! She made it!
 
 ## Step 2. Snowflake falling down
 
-Clara was satisfied with the image of the white snowflake on the blue background.
-However, that was boring.
-Next, she wanted to move the snowflake like it was falling down.
-This needed further Quil API study and googling.
-Moving some pieces in the image is called "animation".
-She learned that Quil had two choices: a legacy, simple way and a new style using a framework.
-Her choice was the new framework style since the coding looked simple.
+Clara was satisfied with the image of the white snowflake on the blue background. However, that was boring.
+
+Next, she wanted to move the snowflake like it was falling down. This needed further Quil API study and googling.
+
+Moving some pieces in the image is called "animation". She learned that Quil had two choices: a legacy, simple way and a new style using a framework.
+
+Her choice was the new framework style, since the coding looked simple.
 
 
 ### add framework
 
-Clara read the document [Functional mode (fun mode)](https://github.com/quil/quil/wiki/Functional-mode-(fun-mode)), and added two lines to her `practice.clj`.
+Clara read the document [Functional mode (fun mode)](https://github.com/quil/quil/wiki/Functional-mode-(fun-mode)) and added two lines to her `practice.clj`:
 
 1. `[quil.middleware :as m]` in the `ns` form
 2. `:middleware [m/fun-mode]` in the `q/defsketch` form
 
 
-At this point, the `practice.clj` looks like this:
+At this point, `practice.clj` looks like this:
 
 ```clojure
 (ns drawing.practice
@@ -185,32 +187,30 @@ At this point, the `practice.clj` looks like this:
 
 ### add state update
 
-Well, Clara thought,
-"what does 'moving the snowflake like it was falling down' mean in terms of programming?"
+"Well," Clara thought, "What does 'moving the snowflake like it was falling down' mean in terms of programming?"
 
-To draw the snowflake, she used Quil's `image` function,
-described in the API, [image](http://quil.info/api/image/loading-and-displaying#image).
-The x and y parameters were 400 and 10 from the upper-left corner,
-which was the position she set to draw the snowflake.
-To make it fall down, the y parameter should be increased as time goes by.
+To draw the snowflake, she used Quil's `image` function, described in the API: [image](http://quil.info/api/image/loading-and-displaying#image).
+
+The x and y parameters were 400 and 10 from the upper-left corner, which was the position she set to draw the snowflake. To make it fall down, the y parameter should be increased as time goes by.
+
 In terms of programming, 'moving the snowflake like it was falling down' means:
 
-1. set the initial state: for example, (x, y) = (400, 10)
-2. draw the background first, then the snowflake
-3. update the state - increase the y parameter: for example (x, y) = (400, 11)
-4. draw the background again first, then the snowflake
-5. repeat 2 and 3, increasing the y parameter
+1. Set the initial state--for example, `(x, y) = (400, 10)`
+2. Draw the background first, then the snowflake
+3. Update the state - increase the `y` parameter--for example, `(x, y) = (400, 11)`
+4. Draw the background again first, then the snowflake
+5. Repeat 2 and 3, increasing the `y` parameter.
 
-In her application, the "changing state" is the y parameter only.
-How could she increment the y value by one?
-Yes, Clojure has the `inc` function. This was the one she used.
+In her application, "changing state" includes only the `y` parameter. How could she increment the `y` value by one?
+
+Yes, Clojure has the `inc` function. This is the function she used.
 
 Here's what she did:
 
-1. add a new function `update` which will increment the y parameter by one
-2. change the `draw` function to take argument `state`
-3. change `q/image` function's parameter to see the `state`
-4. add `update` function in the `q/defsketch` form
+1. Add a new function `update` which will increment the `y` parameter by one
+2. Change the `draw` function to take the argument `state`
+3. Change `q/image` function's parameter to see the `state`
+4. Add the `update` function in the `q/defsketch` form
 
 
 At this point, `practice.clj` looks like this:
@@ -250,23 +250,21 @@ At this point, `practice.clj` looks like this:
   :middleware [m/fun-mode])
 ```
 
-When Clara ran this code - hey! she saw the snowflake was faliing down.
+When Clara ran this code--hey! She saw that the snowflake was falling down.
 
 
 ## Step 3. Make the snowflake keep falling down from top to bottom
 
-Clara has a nice Quil app. But, once the snowflake went down beyond the bottom line,
-that's it. Just a blue background remained.
-So, she wanted it to repeat again and again.
-In other words: if the snowflake reaches the bottom, it should come back to the top.
-Then, it should fall down again.
+Clara has a nice Quil app. But, once the snowflake went down beyond the bottom line, that was it. Only a blue background remained. So, she wanted it to repeat again and again.
+
+In other words: if the snowflake reaches the bottom, it should come back to the top. Then, it should fall down again.
 
 In terms of programming, what does that mean?
-If the `state`(y parameter) is greater than the height of the image,
-`state` will go back to 0.
-Otherwise, the `state` will be incremented by one.
 
-OK, Clara learned `if`, which is used for flow control at the ClojureBridge workshop, [Flow Control](https://github.com/ClojureBridge/curriculum/blob/master/outline/flow_control.md).
+If the `state` (`y` parameter) is greater than the height of the image, `state` will go back to `0`. Otherwise, the `state` will be incremented by one.
+
+OK, Clara learned `if`, which is used for flow control, at the ClojureBridge workshop: [Flow Control](https://github.com/ClojureBridge/curriculum/blob/master/outline/flow_control.md).
+
 So, she used `if` to make the snowflake go back to the top in the update function.
 
 At this point, `practice.clj` looks like this:
@@ -313,14 +311,11 @@ Clara saw the snowflake appear from the top after it went down below the bottom 
 
 ## Step 4. Make more snowflakes fall down from top to bottom
 
-Looking at the snowflake fall down many times is nice.
-But, Clara thought she wanted to see more snowflakes falling down,
-one or more on the left half, also one or more on the right half.
+Looking at the snowflake fall down many times is nice. But, Clara wanted to see more snowflakes falling down: one or more on the left half, as well as one or more on the right half.
 
-Again, she needed to think in the words of programming.
-It would be "draw mutiple images with the different x parameters."
-The easiest way is copy-pasting `(q/image @flake 400 state)` mutiple times with the different x parameters.
-For example:
+Again, she needed to think in terms of programming. 
+
+This would be "draw mutiple images with the different `x` parameters." The easiest way to do that is to copy-paste `(q/image @flake 400 state)` mutiple times with the different `x` parameters. For example,
 
 ```clojure
 (q/image @flake 150 state)
@@ -328,16 +323,14 @@ For example:
 (q/image @flake 650 state)
 ```
 
-But, for Clara, this did not look nice since she learned a lot about Clojure and wanted to use what she knew.
+But, for Clara, this did not look nice; she learned a lot about Clojure and wanted to use what she knew.
 
-Well, first, she thought about how to keep multiple x parameters.
-She remembered there was a `vector` in the [Data Structure](https://github.com/ClojureBridge/curriculum/blob/master/outline/data_structures.md) section,
-which looked a good fit in this case.
+First, she thought about how to keep multiple `x` parameters. She remembered there was a `vector` in the [Data Structures](https://github.com/ClojureBridge/curriculum/blob/master/outline/data_structures.md) section, which looked a good fit in this case.
 
 Here's what she did to add more snowflakes:
 
-1. add a vector which has multiple x parameters with `def`.
-2. draw snowflakes as many times as the number of x-params using `doseq`.
+1. Add a vector which has multiple `x` parameters with `def`.
+2. Draw snowflakes as many times as the number of `x`-params using `doseq`.
 
 * See, [doseq](http://clojuredocs.org/clojure.core/doseq) for more info.
 
@@ -382,44 +375,37 @@ At this point, `practice.clj` looks like this:
   :middleware [m/fun-mode])
 ```
 
-Yeah! Clara saw three snowflakes kept falling down.
+Yeah! Clara saw three snowflakes that kept falling down.
 
 
 ## Step 5. Make snowflakes keep falling down at different rates 
 
 So far, so good.
-But, Clara felt something was not quite right.
-All three snowflakes fell down simultaneously, which does not look like natural.
-So, she wanted to make them falling down at different rates, the more natural way.
 
-Using the words of programming,
-the problem here is that all three snowflakes share the same y parameter.
+But, Clara felt something was not quite right. All three snowflakes fell down simultaneously, which does not look very natural. So, she wanted to make them fall down at different rates.
 
-Obviously, adding multiple y values would solve the problem.
-The question is how?
+Using programming terms, the problem here is that all three snowflakes share the same `y` parameter.
 
-As she used `vector` for the x parameters, the `vector` is a good data structure for y parameters as well.
-But, not just the height - Clara wanted to change the speed of each snowflake falling down.
-So, she looked at the ClojureBridge curriculum,
-[More Data Structures](https://github.com/ClojureBridge/curriculum/blob/master/outline/data_structures2.md), and found the `Maps` section.
-Then, she changed the `state` form a single value to a vector of 3 maps.
+Adding multiple `y` values would solve the problem--but how?
+
+As she used `vector` for the x parameters, the `vector` is a good data structure for `y` parameters as well. But, not just the height; Clara wanted to change the speed of each snowflake falling down.
+
+So, she looked at the ClojureBridge curriculum page
+[More Data Structures](https://github.com/ClojureBridge/curriculum/blob/master/outline/data_structures2.md) and found the `Maps` section. Then, she changed the `state` from a single value to a vector of 3 maps.
 
 ```clojure
 [{:y 10 :speed 1} {:y 300 :speed 5} {:y 100 :speed 3}]
 ```
 
 It was a nice data structure.
-However, her `update` function was not that simple anymore.
-She needed to update all y values in the three maps.
-Ok, she already learned how to get and update the values in the map.
-There was an `assoc` function, which will change the value in a map, which appeared in
-[More Functions](https://github.com/ClojureBridge/curriculum/blob/master/outline/functions2.md).
-(See [http://clojuredocs.org/clojure.core/assoc](http://clojuredocs.org/clojure.core/assoc) for more info)
 
-To iterate over all elements in a vector, Clojure has a few functions.
-But, be careful.
-The `update` function must return the updated state.
-So, she used `for` for updating the state like this:
+However, her `update` function was not very simple anymore. She needed to update all `y` values in the three maps.
+
+She had already learned how to get and update the values in the map. There was an `assoc` function, which would change the value in a map, that appeared in [More Functions](https://github.com/ClojureBridge/curriculum/blob/master/outline/functions2.md). (See [http://clojuredocs.org/clojure.core/assoc](http://clojuredocs.org/clojure.core/assoc) for more info)
+
+To iterate over all elements in a vector, Clojure has a few functions. But, be careful! The `update` function must return the updated state.
+
+So, she used `for` to update the state like this:
 
 ```clojure
 (for [p state]
@@ -429,13 +415,11 @@ So, she used `for` for updating the state like this:
   )
 ```
 
-Another challenge was a `draw` function.
-Clara found a couple of ways to repeat something in Clojure.
-Among them, she chose `dotimes` and `nth` to repeatedly draw images.
-The `nth` function is the one in 
-[More Functions](https://github.com/ClojureBridge/curriculum/blob/master/outline/functions2.md)
+Another challenge was the `draw` function. 
 
-In this case, she knew there were exactly 3 snowflakes, so she changed the code to draw 3 snowflakes as in the below:
+Clara found a couple of ways to repeat something in Clojure. Among them, she chose `dotimes` and `nth` to repeatedly draw images; the `nth` function is the one in [More Functions](https://github.com/ClojureBridge/curriculum/blob/master/outline/functions2.md)
+
+In this case, she knew there were exactly 3 snowflakes, so she changed the code to draw 3 snowflakes as shown below:
 
 ```clojure
 (dotimes [n 3]
@@ -484,20 +468,19 @@ At this point, her entire `practice.clj` looks like this:
   :middleware [m/fun-mode])
 ```
 
-When she ran the code above, three snowflakes kept falling down at different speeds.
-It looked more natural.
+When she ran the code above, three snowflakes kept falling down at different speeds. It looked more natural.
 
 
 ## Step 6. Do some "refactoring"
 
-Clara looked at her `practice.clj` thinking her code got longer.
-When she looked at her code from top to bottom again,
-she thought "`x-params` may be part of the state."
-So, she changed her `state` to have the x parameter also, like
-`[{:x 100 :y 10 :speed 1} {:x 400 :y 300 :speed 5} {:x 700 :y 100 :speed 3}]`.
+Clara looked at her `practice.clj`, thinking her code got longer. 
+
+When she looked at her code from top to bottom again, she thought "`x-params` may be part of the state." So, she changed her `state` to have the x parameter also, like `[{:x 100 :y 10 :speed 1} {:x 400 :y 300 :speed 5} {:x 700 :y 100 :speed 3}]`.
+
 She found that this new format was easy to maintain the state of each snowflake.
 
-Now, Clara also needed to change the drawing snowflakes part.
+Now, Clara also needed to change the part that drew the snowflakes.
+
 At first, she wrote it like this:
 
 ```clojure
@@ -506,13 +489,13 @@ At first, she wrote it like this:
 ```
 
 But, the exact the same thing, `(nth state n)`, appeared twice.
-"Is there anything to avoid repetition?" she thought and went to
-[Clojure Cheat Sheet](http://clojure.org/cheatsheet) for `dotimes` syntax.
-She clicked on `dotimes` in the Macros, Loop section and saw the syntax described in [dotimes](http://clojuredocs.org/clojure.core/dotimes).
+
+"Is there anything to avoid repetition?" she thought. She went to [Clojure Cheat Sheet](http://clojure.org/cheatsheet) to figure out the `dotimes` syntax. Then, she clicked on `dotimes` in the "Macros, Loops" section and saw the syntax described in [dotimes](http://clojuredocs.org/clojure.core/dotimes).
+
 It says `(dotimes bindings & body)`.
 
-Clara remembered she learned `let` in [Flow Control](https://github.com/ClojureBridge/curriculum/blob/master/outline/flow_control.md),
-which was the "bindings". So, she rewrote it using `let` like this:
+Clara remembered that she learned `let` in [Flow Control](https://github.com/ClojureBridge/curriculum/blob/master/outline/flow_control.md),
+which was "bindings". So, she rewrote it using `let` like this:
 
 ```clojure
 (dotimes [n 3]
@@ -521,6 +504,7 @@ which was the "bindings". So, she rewrote it using `let` like this:
 ```
 
 It looked nice and Clojure-ish.
+
 At this moment, her entire `practice.clj` looks like this:
 
 ```clojure
@@ -563,34 +547,33 @@ At this moment, her entire `practice.clj` looks like this:
   :middleware [m/fun-mode])
 ```
 
-She saw the exact same result as the previous code, but her code looked nicer.
-This sort of work is often called "refactoring".
+She saw the exact same result as the previous code, but her code looked nicer. This sort of work is often called "refactoring".
 
 
 ## Step 7. Make snowflakes swing as they fall down
 
-Clara was getting familiar with Clojure coding.
-Her Quil app was getting much better as well.
-But, looking at the snowflakes falling down, she thought she could swing them left and the right as they fall down.
-Right now, all snowflakes were falling straight down.
+Clara was getting familiar with Clojure coding. Her Quil app was getting much better, as well!
 
-In the words of programming,
-the x parameter should both increase and decrease when the value is updated.
-This means the `update` function should update the x parameters as well as the y parameters.
+However, looking at the snowflakes falling down, she thought she could swing them left and the right as they fall down. Right now, all of the snowflakes were falling straight down.
 
-To realize this feature, she changed the initial state to this:
+In programming terms, the `x` parameter should both increase and decrease when the value is updated. This means that the `update` function should update the `x` parameters as well as the `y` parameters.
+
+To write this feature, she changed the initial state to this:
 
 ```clojure
 [{:x 100 :swing 10 :y 10 :speed 8}
  {:x 400 :swing 5 :y 300 :speed 11}
  {:x 700 :swing 8 :y 100 :speed 9}]
 ```
-The map got a new `:swing` key, which holds a range of left and right from a current position.
-This means the updated x parameter will have a value between the current x parameter + swing and the current x parameter - swing. For example, the first snowflake's next x parameter will be between 100 + 10 and 100 - 10.
 
-To update the x parameter by a random value between some range, she needed to do something not just using the existing clojure functions.
-She found [`rand-int`](http://clojuredocs.org/clojure.core/rand-int) from [Clojure Cheat Sheet](http://clojure.org/cheatsheet), but it only returned between 0 and specified value. Googling led her to this clojure code
-(from [https://github.com/sjl/roul/blob/master/src/roul/random.clj](https://github.com/sjl/roul/blob/master/src/roul/random.clj) ):
+The map got a new `:swing` key, which holds a range of left and right from a current position.
+
+This means that the updated `x` parameter will have a value between the current `x` parameter + `swing` and the current `x` parameter - `swing`. For example, the first snowflake's next `x` parameter will be between `100 + 10` and `100 - 10`.
+
+To update the `x` parameter by a random value between some range, she needed to do something not just using the existing clojure functions.
+She found [`rand-int`](http://clojuredocs.org/clojure.core/rand-int) from [Clojure Cheat Sheet](http://clojure.org/cheatsheet), but it only returned between `0` and a specified value. 
+
+Googling led her to this clojure code (from [https://github.com/sjl/roul/blob/master/src/roul/random.clj](https://github.com/sjl/roul/blob/master/src/roul/random.clj) ):
 
 ```clojure
 (defn rand-int
@@ -602,9 +585,10 @@ She found [`rand-int`](http://clojuredocs.org/clojure.core/rand-int) from [Cloju
 ```
 
 This was the random generation function that she wanted. But, she wanted a bit more.
-When the value goes to less than 0, it should take the value of the image width so that the snowflake will appear from the right. Likewise, when the value goes more than the image width, it should have value 0 so that the snowflake will appear from the left.
-She couldn't use `if` anymore here since `if` takes only one predicate (comparison).
-Instead of `if`, she used `cond` and wrote an `update-x` funcion.
+
+When the value goes to less than `0`, it should take the value of the image width, so that the snowflake will appear from the right. Likewise, when the value goes more than the image width, it should have value `0` so that the snowflake will appear from the left.
+
+She couldn't use `if` anymore here, since `if` takes only one predicate (comparison). Instead of `if`, she used `cond` and wrote an `update-x` funcion.
 
 ```clojure
 (defn update-x
@@ -629,13 +613,15 @@ This `update-x` function hinted to her that she could refactor the update functi
 ```
 
 Lastly, she rewrote the `update` function.
+
 She could still use `assoc`, but it would be like this:
 
 ```
 (assoc (assoc p :y (update-y (:y p) (:speed p))) :x (update-x (:x p) (:swing p)))
 ```
 
-She remembered that there was another function for map. It was `merge`, which was appeared in [More Functions](https://github.com/ClojureBridge/curriculum/blob/master/outline/functions2.md).
+She remembered that there was another function for maps. It was `merge`, which was appeared in [More Functions](https://github.com/ClojureBridge/curriculum/blob/master/outline/functions2.md).
+
 Using `merge`, her `update` function turned into this:
 
 ```clojure
@@ -703,12 +689,9 @@ At this point, her entire `practice.clj` looks like this:
 
 (frame-rate has been changed to 30)
 
-When Clara ran this code, she saw snowflakes were falling down swinging left and right randomly.
+When Clara ran this code, she saw snowflakes were falling down, swinging left and right randomly.
 
-
-Even though there were a couple of problems as well as room for more refactoring,
-Clara was satified with her app.
-Moreover, she started thinking about her next, more advanced app in Clojure.
+Even though there were a couple of problems as well as room for more refactoring, Clara was satified with her app. Moreover, she started thinking about her next, more advanced app in Clojure!
 
 
 The end.
