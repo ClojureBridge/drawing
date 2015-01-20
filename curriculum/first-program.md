@@ -65,7 +65,7 @@ To add a dependency, open `project.clj`. You should see a section which reads
 
 ```clj
 :dependencies [[org.clojure/clojure "1.6.0"]
-               [quil "2.2.2"]])
+               [quil "2.2.4"]])
 ```
 
 This is where our dependencies are listed. All the dependencies we need for this project are already included.
