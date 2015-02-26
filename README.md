@@ -1,10 +1,11 @@
-# drawing 
+# drawing
 
 ClojureBridge capstone app using Quil to draw.
 
 ## Usage
 
-LightTable - open `lines.clj` and press `Ctrl+Shift+Enter` to evaluate the file.
+LightTable - open `lines.clj` and press `Ctrl+Shift+Enter` to evaluate
+the file.
 
 REPL - run `(require 'drawing.lines)`.
 
