@@ -19,7 +19,7 @@ Clara already learned how to find the way. It was:
 2. Google it
 
 So, Clara went to the Quil API web site,
-[http://quil.info/api](http://quil.info.api), and found the
+[http://quil.info/api](http://quil.info/api), and found the
 [Loading and Displaying](http://quil.info/api/image/loading-and-displaying)
 section. Then, she found the
 [background-image](http://quil.info/api/color/setting#background-image)
