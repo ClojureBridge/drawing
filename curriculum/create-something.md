@@ -266,7 +266,7 @@ At this point, `practice.clj` looks like this:
   10)
 
 (defn update [state]
-  ;; updating y paraemter by one
+  ;; updating y parameter by one
   (inc state))
 
 (defn draw [state]
@@ -331,7 +331,7 @@ At this point, `practice.clj` looks like this:
 (defn update [state]
   (if (>= state (q/height))  ;; state is greater than or equal to image height?
     0                        ;; true - get it back to the 0 (top)
-    (inc state)              ;; false - increment y paraemter by one
+    (inc state)              ;; false - increment y parameter by one
     ))
 
 (defn draw [state]
@@ -408,7 +408,7 @@ At this point, `practice.clj` looks like this:
 (defn update [state]
   (if (>= state (q/height)) ;; state is greater than or equal to image height?
     0                       ;; true - get it back to the 0 (top)
-    (inc state)             ;; false - increment y paraemter by one
+    (inc state)             ;; false - increment y parameter by one
     ))
 
 (defn draw [state]
@@ -520,7 +520,7 @@ At this point, her entire `practice.clj` looks like this:
   (for [p state]
     (if (>= (:y p) (q/height)) ;; y is greater than or equal to image height?
       (assoc p :y 0)                      ;; true - get it back to the 0 (top)
-      (assoc p :y (+ (:y p) (:speed p)))) ;; false - increment y paraemter by one
+      (assoc p :y (+ (:y p) (:speed p)))) ;; false - increment y parameter by one
     ))
 
 (defn draw [state]
