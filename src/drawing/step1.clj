@@ -21,4 +21,4 @@
   :size [1000 1000]
   :setup setup
   :draw draw
-  )
+  :features [:keep-on-top])
