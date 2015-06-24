@@ -183,7 +183,7 @@ from a library.
 Second, we set the color mode to RGB.
 
 Third, we set the color of the lines we will draw with `stroke`. The
-code 255 0 0 represents red. You can look up RGB codes for other
+code 255 0 0 represents red. You can [look up RGB codes](http://xona.com/colorlist/) for other
 colors if you would like to try something else.
 
 In Light Table, in the lines.clj file, add the following after the
