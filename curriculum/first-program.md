@@ -240,3 +240,5 @@ Update your drawing so that:
 Bonus: Make each of the four lines a different color.
 
 Bonus #2: Change the color of the lines based on the mouse position.
+
+Hint: You can browse the [Quil API](http://quil.info/api) for ideas and function definitions.
