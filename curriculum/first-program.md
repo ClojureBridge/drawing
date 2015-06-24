@@ -44,7 +44,7 @@ skeleton:
   should get executed first?"
 - `src/drawing/core.clj` is where the Clojure code goes
 
-This uses a Clojure library, Quil, that creates drawings called
+This uses a Clojure library, [Quil](https://github.com/quil/quil), that creates drawings called
 sketches.
 
 Now let's go ahead and actually run the Quil sketch. Open up Light
@@ -125,7 +125,7 @@ example, you can use `q/fill` instead of `quil.core/fill`.
 
 ### Drawing with Quil
 
-Quil is a Clojure library that provides the powers of Processing, a
+Quil is a Clojure library that provides the powers of [Processing](https://processing.org/), a
 tool that allows you to create drawings and animations. We will use
 the functions of Quil to create some of our own drawings.
 
