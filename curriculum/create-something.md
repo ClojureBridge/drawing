@@ -97,7 +97,7 @@ Now, `practice.clj` looks like this:
 Looking at the Quil API and the StackOverflow question, Clara learned
 that where to put her image files was important. She created a new
 directory, `images`, under the top `drawing` directory, and she and
-put two images there.
+[put two images there](https://github.com/ClojureBridge/drawing/tree/master/images).
 
 Now, her directory structure looks like the one below:
 
