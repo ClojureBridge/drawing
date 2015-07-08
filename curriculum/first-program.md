@@ -44,7 +44,7 @@ skeleton:
   should get executed first?"
 - `src/drawing/core.clj` is where the Clojure code goes
 
-This uses a Clojure library, Quil, that creates drawings called
+This uses a Clojure library, [Quil](https://github.com/quil/quil), that creates drawings called
 sketches.
 
 Now let's go ahead and actually run the Quil sketch. Open up Light
@@ -98,7 +98,7 @@ which reads
 
 ```clj
 :dependencies [[org.clojure/clojure "1.6.0"]
-               [quil "2.2.4"]])
+               [quil "2.2.6"]])
 ```
 
 This is where our dependencies are listed. All the dependencies we
@@ -125,7 +125,7 @@ example, you can use `q/fill` instead of `quil.core/fill`.
 
 ### Drawing with Quil
 
-Quil is a Clojure library that provides the powers of Processing, a
+Quil is a Clojure library that provides the powers of [Processing](https://processing.org/), a
 tool that allows you to create drawings and animations. We will use
 the functions of Quil to create some of our own drawings.
 
@@ -183,7 +183,7 @@ from a library.
 Second, we set the color mode to RGB.
 
 Third, we set the color of the lines we will draw with `stroke`. The
-code 255 0 0 represents red. You can look up RGB codes for other
+code 255 0 0 represents red. You can [look up RGB codes](http://xona.com/colorlist/) for other
 colors if you would like to try something else.
 
 In Light Table, in the lines.clj file, add the following after the
@@ -240,3 +240,5 @@ Update your drawing so that:
 Bonus: Make each of the four lines a different color.
 
 Bonus #2: Change the color of the lines based on the mouse position.
+
+Hint: You can browse the [Quil API](http://quil.info/api) for ideas and function definitions.
