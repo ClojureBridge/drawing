@@ -41,6 +41,7 @@
   ; It updates sketch state.
   :update update
   :draw draw
+  :features [:keep-on-top]
   ; This sketch uses functional-mode middleware.
   ; Check quil wiki for more info about middlewares and particularly
   ; fun-mode.
