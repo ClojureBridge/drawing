@@ -801,3 +801,7 @@ refactoring, Clara was satified with her app. Moreover, she started
 thinking about her next, more advanced app in Clojure!
 
 The End.
+
+
+--------------
+Snowflake is designed by Freepik, http://www.flaticon.com/packs/snowflakes
