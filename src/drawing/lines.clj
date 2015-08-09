@@ -43,4 +43,5 @@
   ; setup function is called setup
   :setup setup
   ; draw function is called draw
-  :draw draw )
+  :draw draw
+  :features [:keep-on-top])
