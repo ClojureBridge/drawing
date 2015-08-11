@@ -216,7 +216,7 @@ At this point, `practice.clj` looks like this:
 "Well," Clara thought, "What does 'moving the snowflake like it was
 falling down' mean in terms of programming?"
 
-`To draw the snowflake, she used Quil's `image` function, described in
+To draw the snowflake, she used Quil's `image` function, described in
 the API:
 [image](http://quil.info/api/image/loading-and-displaying#image).
 
