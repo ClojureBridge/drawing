@@ -635,7 +635,7 @@ Clara was getting familiar with Clojure coding. Her Quil app was
 getting much better, as well!
 
 However, looking at the snowflakes falling down, she thought she could
-swing them left and the right as they fall down. Right now, all of the
+swing them left and then right as they fall down. Right now, all of the
 snowflakes were falling straight down.
 
 In programming terms, the `x` parameter should both increase and
