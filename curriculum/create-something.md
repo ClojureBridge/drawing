@@ -137,10 +137,13 @@ At this moment, `practice.clj` looks like this:
    (ref-set flake (q/load-image "images/white_flake.png"))
    (ref-set background (q/load-image "images/blue_background.png"))))
 
-(defn draw []
+(defn draw [state]
   ;; drawing blue background and a snowflake on it
-  (q/background-image @background)
-  (q/image @flake 400 10))
+  (if @background
+    (do
+      (q/background-image @background)
+      (q/image @flake 400 state))
+    (println "The file " "images/blue_background.png" " has not been loaded")))
 
 (q/defsketch practice
   :title "Clara's Quil practice"
@@ -198,10 +201,13 @@ At this point, `practice.clj` looks like this:
    (ref-set flake (q/load-image "images/white_flake.png"))
    (ref-set background (q/load-image "images/blue_background.png"))))
 
-(defn draw []
+(defn draw [state]
   ;; drawing blue background and a snowflake on it
-  (q/background-image @background)
-  (q/image @flake 400 10))
+  (if @background
+    (do
+      (q/background-image @background)
+      (q/image @flake 400 state))
+    (println "The file " "images/blue_background.png" " has not been loaded")))
 
 (q/defsketch practice
   :title "Clara's Quil practice"
@@ -271,8 +277,11 @@ At this point, `practice.clj` looks like this:
 
 (defn draw [state]
   ;; drawing blue background and a snowflake on it
-  (q/background-image @background)
-  (q/image @flake 400 state))
+  (if @background
+    (do
+      (q/background-image @background)
+      (q/image @flake 400 state))
+    (println "The file " "images/blue_background.png" " has not been loaded")))
 
 (q/defsketch practice
   :title "Clara's Quil practice"
@@ -336,8 +345,12 @@ At this point, `practice.clj` looks like this:
 
 (defn draw [state]
   ;; drawing blue background and a snowflake on it
-  (q/background-image @background)
-  (q/image @flake 400 state))
+  (if @background
+    (do
+      (q/background-image @background)
+      (q/image @flake 400 state))
+    (println "The file " "images/blue_background.png" " has not been loaded")))
+
 
 (q/defsketch practice
   :title "Clara's Quil practice"
@@ -413,9 +426,13 @@ At this point, `practice.clj` looks like this:
 
 (defn draw [state]
   ;; drawing blue background and mutiple snowflakes on it
-  (q/background-image @background)
-  (doseq [x x-params]
-    (q/image @flake x state)))
+  (if @background
+    (do
+      (q/background-image @background)
+      (doseq [x x-params]
+        (q/image @flake x state)))
+    (println "The file " "images/blue_background.png" " has not been loaded")))
+
 
 (q/defsketch practice
   :title "Clara's Quil practice"
@@ -523,11 +540,17 @@ At this point, her entire `practice.clj` looks like this:
       (assoc p :y (+ (:y p) (:speed p)))) ;; false - increment y parameter by one
     ))
 
+
 (defn draw [state]
   ;; drawing blue background and mutiple snowflakes on it
-  (q/background-image @background)
-  (dotimes [n 3]
-    (q/image @flake (nth x-params n) (:y (nth state n)))))
+  (if @background
+    (do
+      (q/background-image @background)
+      (dotimes [n 3]
+        (let [snowflake (nth state n)]
+          (q/image @flake (:x snowflake) (:y snowflake)))))
+    (println "The file " "images/blue_background.png" " has not been loaded")))
+
 
 (q/defsketch practice
   :title "Clara's Quil practice"
@@ -612,10 +635,14 @@ At this moment, her entire `practice.clj` looks like this:
 
 (defn draw [state]
   ;; drawing blue background and mutiple snowflakes on it
-  (q/background-image @background)
-  (dotimes [n 3]
-    (let [snowflake (nth state n)]
-      (q/image @flake (:x snowflake) (:y snowflake)))))
+  (if @background
+    (do
+      (q/background-image @background)
+      (dotimes [n 3]
+        (let [snowflake (nth state n)]
+          (q/image @flake (:x snowflake) (:y snowflake)))))
+    (println "The file " "images/blue_background.png" " has not been loaded")))
+
 
 (q/defsketch practice
   :title "Clara's Quil practice"
@@ -777,10 +804,13 @@ At this point, her entire `practice.clj` looks like this:
 
 (defn draw [state]
   ;; drawing blue background and mutiple snowflakes on it
-  (q/background-image @background)
-  (dotimes [n 3]
-    (let [snowflake (nth state n)]
-      (q/image @flake (:x snowflake) (:y snowflake)))))
+  (if @background
+    (do
+      (q/background-image @background)
+      (dotimes [n 3]
+        (let [snowflake (nth state n)]
+          (q/image @flake (:x snowflake) (:y snowflake)))))
+    (println "The file " "images/blue_background.png" " has not been loaded")))
 
 (q/defsketch practice
   :title "Clara's Quil practice"
