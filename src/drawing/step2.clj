@@ -1,27 +1,23 @@
-(ns drawing.practice
+(ns drawing.step2
   (:require [quil.core :as q]
             [quil.middleware :as m]))
 
-(def flake (ref nil))        ;; reference to snowflake image
-(def background (ref nil))   ;; reference to blue background image
-
 (defn setup []
   ;; loading two images
-  (dosync
-   (ref-set flake (q/load-image "images/white_flake.png"))
-   (ref-set background (q/load-image "images/blue_background.png")))
   (q/smooth)
   (q/frame-rate 60)
-  10)
+  {:flake (q/load-image "images/white_flake.png")
+   :background (q/load-image "images/blue_background.png")
+   :vertical-pos 10})
 
 (defn update [state]
   ;; updating y paraemter by one
-  (inc state))
+  (update-in state [:vertical-pos] inc))
 
 (defn draw [state]
   ;; drawing blue background and a snowflake on it
-  (q/background-image @background)
-  (q/image @flake 400 state))
+  (q/background-image (:background state))
+  (q/image (:flake state) 400 (:vertical-pos state)))
 
 (q/defsketch practice
   :title "Clara's Quil practice"

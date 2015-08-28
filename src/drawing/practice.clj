@@ -2,29 +2,22 @@
   (:require [quil.core :as q]
             [quil.middleware :as m]))
 
-(def flake (ref nil))        ;; reference to snowflake image
-(def background (ref nil))   ;; reference to blue background image
-
 (defn setup []
   ;; loading two images
-  (dosync
-   (ref-set flake (q/load-image "images/white_flake.png"))
-   (ref-set background (q/load-image "images/blue_background.png")))
   (q/smooth)
-  (q/frame-rate 30)
-  [{:x 100 :swing 10 :y 10 :speed 8}
-   {:x 400 :swing 5 :y 300 :speed 11}
-   {:x 700 :swing 8 :y 100 :speed 9}])
+  (q/frame-rate 60)
+  {:flake (q/load-image "images/white_flake.png")
+   :background (q/load-image "images/blue_background.png")
+   :params [{:x 100 :swing 3 :y 10  :speed 1}
+            {:x 400 :swing 4 :y 300 :speed 5}
+            {:x 700 :swing 5 :y 100 :speed 3}]})
 
 (defn update-x
-  [x swing]
-  (let [start (- x swing)
-        end (+ x swing)
-        new-x (+ start (rand-int (- end start)))]
-    (cond
-     (> 0 new-x) (q/width)
-     (< (q/width) new-x) 0
-     :else new-x )))
+  [x swing y]
+  (cond
+   (< x 0) (q/width)                                  ;; too left
+   (< x (q/width)) (+ x (* swing (q/sin (/ y 30))))   ;; within frame
+   :else 0))                                          ;; too right
 
 (defn update-y
   [y speed]
@@ -33,16 +26,18 @@
     (+ y speed)))       ;; false - add a value of speed
 
 (defn update [state]
-  (for [p state]
-    (merge p {:x (update-x (:x p) (:swing p)) :y (update-y (:y p) (:speed p))})
-    ))
+  (let [params  (:params state)
+        y-updated (map #(update-in % [:y] update-y (:speed %)) params)
+        x-updated (map #(update-in % [:x] update-x (:swing %) (:y %)) y-updated)]
+    (assoc state :params x-updated)))
 
 (defn draw [state]
   ;; drawing blue background and mutiple snowflakes on it
-  (q/background-image @background)
-  (dotimes [n 3]
-    (let [snowflake (nth state n)]
-      (q/image @flake (:x snowflake) (:y snowflake)))))
+  (q/background-image (:background state))
+  (let [snowflakes (:params state)]
+    (dotimes [n 3]
+      (let [snowflake (nth snowflakes n)]
+        (q/image (:flake state) (:x snowflake) (:y snowflake))))))
 
 (q/defsketch practice
   :title "Clara's Quil practice"
