@@ -2,8 +2,8 @@
   (:require [quil.core :as q]
             [quil.middleware :as m]))
 
-(def x-params [100 400 700]) ;; x parameters for three snowflakes
-(def speeds [1 5 3])
+(def x-params [10 200 390]) ;; x parameters for three snowflakes
+(def speeds [1 4 2])
 
 (defn setup []
   ;; loading two images
@@ -11,7 +11,7 @@
   (q/frame-rate 60)
   {:flake (q/load-image "images/white_flake.png")
    :background (q/load-image "images/blue_background.png")
-   :y-params [10 300 100]})
+   :y-params [10 150 50]})
 
 (defn update-y
   [y speed]
@@ -33,7 +33,7 @@
 
 (q/defsketch practice
   :title "Clara's Quil practice"
-  :size [1000 1000]
+  :size [500 500]
   :setup setup
   :update update
   :draw draw

@@ -8,15 +8,15 @@
   (q/frame-rate 60)
   {:flake (q/load-image "images/white_flake.png")
    :background (q/load-image "images/blue_background.png")
-   :params [{:x 100 :swing 3 :y 10  :speed 1}
-            {:x 400 :swing 4 :y 300 :speed 5}
-            {:x 700 :swing 5 :y 100 :speed 3}]})
+   :params [{:x 10  :swing 1 :y 10  :speed 1}
+            {:x 200 :swing 3 :y 100 :speed 4}
+            {:x 390 :swing 2 :y 50  :speed 2}]})
 
 (defn update-x
   [x swing y]
   (cond
    (< x 0) (q/width)                                  ;; too left
-   (< x (q/width)) (+ x (* swing (q/sin (/ y 30))))   ;; within frame
+   (< x (q/width)) (+ x (* swing (q/sin (/ y 50))))   ;; within frame
    :else 0))                                          ;; too right
 
 (defn update-y
@@ -41,7 +41,7 @@
 
 (q/defsketch practice
   :title "Clara's Quil practice"
-  :size [1000 1000]
+  :size [500 500]
   :setup setup
   :update update
   :draw draw

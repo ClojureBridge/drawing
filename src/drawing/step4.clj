@@ -2,7 +2,7 @@
   (:require [quil.core :as q]
             [quil.middleware :as m]))
 
-(def x-params [100 400 700]) ;; x parameters for three snowflakes
+(def x-params [10 200 390]) ;; x parameters for three snowflakes
 
 (defn setup []
   ;; loading two images
@@ -26,7 +26,7 @@
 
 (q/defsketch practice
   :title "Clara's Quil practice"
-  :size [1000 1000]
+  :size [500 500]
   :setup setup
   :update update
   :draw draw

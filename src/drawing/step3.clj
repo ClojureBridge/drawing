@@ -19,11 +19,11 @@
 (defn draw [state]
   ;; drawing blue background and a snowflake on it
   (q/background-image (:background state))
-  (q/image (:flake state) 400 (:y-param state)))
+  (q/image (:flake state) 200 (:y-param state)))
 
 (q/defsketch practice
   :title "Clara's Quil practice"
-  :size [1000 1000]
+  :size [500 500]
   :setup setup
   :update update
   :draw draw

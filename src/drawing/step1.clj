@@ -10,11 +10,11 @@
 (defn draw [{flake :flake background :background}]
   ;; drawing blue background and a snowflake on it
   (q/background-image background)
-  (q/image flake 400 10))
+  (q/image flake 200 10))
 
 (q/defsketch practice
   :title "Clara's Quil practice"
-  :size [1000 1000]
+  :size [500 500]
   :setup setup
   :draw draw
   :features [:keep-on-top]
