@@ -31,8 +31,6 @@ drawing
 └── src
     └── drawing
         └── core.clj
-
-2 directories, 4 files
 ```
 
 There's nothing inherently special or Clojure-y about this project
