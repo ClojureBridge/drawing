@@ -44,7 +44,7 @@ tutorial,
 so she already had the `drawing` Clojure project.  She decided to use
 the same project for her own app.
 
-### Create a new source file
+### step 1-1: Create a new source file
 
 Clara added a new file under `src/drawing` directory with the name
 `practice.clj`.  At this point, her directory structure looks like the
@@ -59,10 +59,10 @@ drawing
     └── drawing
         ├── core.clj
         ├── lines.clj
-        └── practice.clj
+        └── practice.clj      <-- this file is added in step 1-1
 ```
 
-### Add namespace - make the source code clojure-ish
+### step 1-2: Add namespace - make the source code clojure-ish
 
 First, Clojure source code has a namespace declaration, so Clara
 copy-pasted `ns` from the top of her `lines.clj` file. But, she
@@ -76,7 +76,7 @@ At this moment, `practice.clj` looks like this:
   (:require [quil.core :as q]))
 ```
 
-### Add basic Quil code
+### step 1-3: Add basic Quil code
 
 Basic Quil code has `setup` and `draw` functions, along with a
 `defsketch` macro, which defines the app. Following these Quil rules,
@@ -88,90 +88,119 @@ Now, `practice.clj` looks like this:
 (ns drawing.practice
   (:require [quil.core :as q]))
 
+;; setup and draw functions and q/defsketch are added in step 1-3
 (defn setup [])
 
 (defn draw [])
 
 (q/defsketch practice
   :title "Clara's Quil practice"
-  :size [1000 1000]
+  :size [500 500]
   :setup setup
   :draw draw
-  )
+  :features [:keep-on-top])
 ```
 
-```clojure
-1(ns drawing.practice
-2    (:require [quil.core :as q]))
-3
-4(defn setup [])
-5
-6(defn draw [])
-7
-8(q/defsketch practice
-9  :title "Clara's Quil practice"
-10  :size [500 500]
-11  :setup setup
-12  :draw draw
-13  :features [:keep-on-top])
-```
-
-
-### Load snowflake and background images
+### step 1-4: Download and put snowflake and background images
 
 Looking at the Quil API and the StackOverflow question, Clara learned
 that where to put her image files was important. She created a new
-directory, `images`, under the top `drawing` directory, and she and
+directory, `images`, under the top `drawing` directory, and
 [put two images there](https://github.com/ClojureBridge/drawing/tree/master/images).
 
 Now, her directory structure looks like the one below:
 
 ```
-| LICENSE
-| README.md
-| project.clj
-| src
-| | drawing
-| | | core.clj
-| | | lines.clj
-| | | practice.clj
-| images
-| | blue_background.png
-| | white_flake.png
+drawing
+├── LICENSE
+├── README.md
+├── images
+│   ├── blue_background.png      <-- added in step 1-4
+│   └── white_flake.png          <-- added in step 1-4
+├── project.clj
+└── src
+    └── drawing
+        ├── core.clj
+        ├── lines.clj
+        └── practice.clj
 ```
 
-Since the images were ready, it was time to code using the Quil API.
+### step 1-5: Add framework
 
-Clara added a few lines of code to the `setup` and `draw` functions in
-`practice.clj` to load and draw two images. She was careful when
-writing the image filenames because it should reflect the actual
-directory structure.
+So far, the images were ready, the next step was to code using the Quil API.
+
+Looking at the xmas tree example, Clara learned her application needed
+one more library to add, `[quil.middleware :as m]` within `:require`.
+This was a quite new experience to her. To figure out what's that and how
+to use, Clara walked through the document
+[Functional mode (fun mode)](https://github.com/quil/quil/wiki/Functional-mode-(fun-mode)).
+
+When she finished the document, Clare murmured, "Ha, fun mode, nice
+name, isn't it? What I should do here is... to add":
+
+1. `[quil.middleware :as m]` in the `ns` form
+2. `:middleware [m/fun-mode]` in the `q/defsketch` form
+3. function argument `state` to `draw` function
+
+"to my `practice.clj`. OK, let's do it!"
 
 At this moment, `practice.clj` looks like this:
 
 ```clojure
 (ns drawing.practice
-  (:require [quil.core :as q]))
+  (:require [quil.core :as q]
+            [quil.middleware :as m]))  ;; this line is added in step 1-5
 
-(def flake (ref nil))        ;; reference to snowflake image
-(def background (ref nil))   ;; reference to blue background image
+(defn setup [])
 
-(defn setup []
-  ;; loading two images
-  (dosync
-   (ref-set flake (q/load-image "images/white_flake.png"))
-   (ref-set background (q/load-image "images/blue_background.png"))))
-
-(defn draw []
-  ;; drawing blue background and a snowflake on it
-  (q/background-image @background)
-  (q/image @flake 400 10))
+(defn draw [state])                    ;; argument state is added in step 1-5
 
 (q/defsketch practice
   :title "Clara's Quil practice"
-  :size [1000 1000]
+  :size [500 500]
   :setup setup
-  :draw draw)
+  :draw draw
+  :features [:keep-on-top]
+  :middleware [m/fun-mode])             ;; this line is added in step 1-5
+```
+
+### step 1-6: Load snowflake and background images
+
+The final pieces to load images are:
+
+1. in `setup` function, load images and return those as a state
+2. in `draw` function, look the contents in `state` and draw images
+
+Clare added a few lines of code to the `setup` and `draw` functions in
+her `practice.clj`. She was careful when writing the image filenames
+because it should reflect the actual directory structure.
+
+At this moment, `practice.clj` looks like this:
+
+```clojure
+(ns drawing.practice
+  (:require [quil.core :as q]
+            [quil.middleware :as m]))
+
+(defn setup []
+  ;; these two lines, a map (data structure) is added in step 1-6
+  {:flake (q/load-image "images/white_flake.png")
+   :background (q/load-image "images/blue_background.png")}
+  )
+
+(defn draw [state]
+  ;; q/background-image and q/image functions are added in step 1-6
+  (q/background-image (:background state))
+  (q/image (:flake state) 200 10)
+  )
+
+(q/defsketch practice
+  :title "Clara's Quil practice"
+  :size [500 500]
+  :setup setup
+  :draw draw
+  :features [:keep-on-top]
+  :middleware [m/fun-mode])
 ```
 
 When Clara ran this code, she saw this image:
@@ -179,6 +208,21 @@ When Clara ran this code, she saw this image:
 ![step 1 screenshot](images/step-1.png)
 
 Woohoo! She made it!
+
+
+#### [bonus] destructuring
+
+Clojure has a nice feature called,
+[destructuring](http://clojurebridge.github.io/community-docs/docs/clojure/destructuring/).
+Using the destructuring in a function argument, we can write `draw` function like this:
+
+```clojure
+(defn draw [{flake :flake background :background}]
+  (q/background-image background)
+  (q/image flake 200 10))
+```
+
+Clojurians often use this handy feature.
 
 
 ## Step 2. Snowflake falling down
