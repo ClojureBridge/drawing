@@ -129,13 +129,13 @@ drawing
 
 So far, the images were ready, the next step was to code using the Quil API.
 
-Looking at the xmas tree example, Clara learned her application needed
+Clare was back to the xmas tree example, and learned her application needed
 one more library to add, `[quil.middleware :as m]` within `:require`.
 This was a quite new experience to her. To figure out what's that and how
 to use, Clara walked through the document
 [Functional mode (fun mode)](https://github.com/quil/quil/wiki/Functional-mode-(fun-mode)).
 
-When she finished the document, Clare murmured, "Ha, fun mode, nice
+When she finished the document, she murmured, "Ha, fun mode, nice
 name, isn't it? What I should do here is... to add":
 
 1. `[quil.middleware :as m]` in the `ns` form
@@ -166,12 +166,12 @@ At this moment, `practice.clj` looks like this:
 
 ### step 1-6: Load snowflake and background images
 
-The final pieces to load images are:
+Clare already knew the final pieces to load images were:
 
 1. in `setup` function, load images and return those as a state
 2. in `draw` function, look the contents in `state` and draw images
 
-Clare added a few lines of code to the `setup` and `draw` functions in
+So, she added a few lines of code to the `setup` and `draw` functions in
 her `practice.clj`. She was careful when writing the image filenames
 because it should reflect the actual directory structure.
 
@@ -228,59 +228,20 @@ Clojurians often use this handy feature.
 ## Step 2. Snowflake falling down
 
 Clara was satisfied with the image of the white snowflake on the blue
-background. However, that was boring.
+background. However, that was boring. For the next step, she wanted to
+move the snowflake like it was falling down. This needed further Quil
+API study and googling.
 
-Next, she wanted to move the snowflake like it was falling down. This
-needed further Quil API study and googling.
+As far as she searched, moving some pieces in the image is called
+**animation**. The basic idea is:
 
-Moving some pieces in the image is called "animation". She learned
-that Quil had two choices: a legacy, simple way and a new style using
-a framework.
+- draw the image at some position
+- update the position
+- draw the image at updated position
 
-Her choice was the new framework style, since the coding looked
-simple.
+So-called animations repeat these steps again and again.
 
-
-### Add framework
-
-Clara read the document
-[Functional mode (fun mode)](https://github.com/quil/quil/wiki/Functional-mode-(fun-mode))
-and added two lines to her `practice.clj`:
-
-1. `[quil.middleware :as m]` in the `ns` form
-2. `:middleware [m/fun-mode]` in the `q/defsketch` form
-
-
-At this point, `practice.clj` looks like this:
-
-```clojure
-(ns drawing.practice
-  (:require [quil.core :as q]
-            [quil.middleware :as m]))
-
-(def flake (ref nil))        ;; reference to snowflake image
-(def background (ref nil))   ;; reference to blue background image
-
-(defn setup []
-  ;; loading two images
-  (dosync
-   (ref-set flake (q/load-image "images/white_flake.png"))
-   (ref-set background (q/load-image "images/blue_background.png"))))
-
-(defn draw []
-  ;; drawing blue background and a snowflake on it
-  (q/background-image @background)
-  (q/image @flake 400 10))
-
-(q/defsketch practice
-  :title "Clara's Quil practice"
-  :size [1000 1000]
-  :setup setup
-  :draw draw
-  :middleware [m/fun-mode])
-```
-
-### Add state update
+### step 2-1: Add state update
 
 "Well," Clara thought, "What does 'moving the snowflake like it was
 falling down' mean in terms of programming?"
@@ -289,16 +250,18 @@ To draw the snowflake, she used Quil's `image` function, described in
 the API:
 [image](http://quil.info/api/image/loading-and-displaying#image).
 
-The x and y parameters were 400 and 10 from the upper-left corner,
+The x and y parameters were 200 and 10 from the upper-left corner,
 which was the position she set to draw the snowflake. To make it fall
 down, the y parameter should be increased as time goes by.
+
+![x and y](images/x-y-grid.png)
 
 In terms of programming, 'moving the snowflake like it was falling
 down' means:
 
-1. Set the initial state--for example, `(x, y) = (400, 10)`
+1. Set the initial state--for example, `(x, y) = (200, 10)`
 2. Draw the background first, then the snowflake
-3. Update the state - increase the `y` parameter--for example, `(x, y) = (400, 11)`
+3. Update the state - increase the `y` parameter--for example, `(x, y) = (200, 11)`
 4. Draw the background again first, then the snowflake
 5. Repeat 2 and 3, increasing the `y` parameter.
 
@@ -309,11 +272,13 @@ Yes, Clojure has the `inc` function. This is the function she used.
 
 Here's what she did:
 
-1. Add a new function `update` which will increment the `y` parameter by one
-2. Change the `draw` function to take the argument `state`
-3. Change `q/image` function's parameter to see the `state`
+1. Add an initial `y` parameter in the map of `setup` function
+2. Add a new function `update` which will increment the `y` parameter by one
+3. Change `q/image` function to see the `y` parameter in `state`
 4. Add the `update` function in the `q/defsketch` form
 
+She added one more function, `(q/smooth)`, to `setup` since this would
+make animation move smoothly.
 
 At this point, `practice.clj` looks like this:
 
@@ -322,37 +287,33 @@ At this point, `practice.clj` looks like this:
   (:require [quil.core :as q]
             [quil.middleware :as m]))
 
-(def flake (ref nil))        ;; reference to snowflake image
-(def background (ref nil))   ;; reference to blue background image
-
 (defn setup []
-  ;; loading two images
-  (dosync
-   (ref-set flake (q/load-image "images/white_flake.png"))
-   (ref-set background (q/load-image "images/blue_background.png")))
-  (q/smooth)
-  (q/frame-rate 60)
-  10)
+  (q/smooth)                                      ;; added in step 2-1
+  {:flake (q/load-image "images/white_flake.png")
+   :background (q/load-image "images/blue_background.png")
+   :y-param 10}                                   ;; added in step 2-1
+  )
 
+;; update function is added in step 2-1
 (defn update [state]
-  ;; updating y parameter by one
-  (inc state))
+  (update-in state [:y-param] inc))
 
 (defn draw [state]
-  ;; drawing blue background and a snowflake on it
-  (q/background-image @background)
-  (q/image @flake 400 state))
+  (q/background-image (:background state))
+  (q/image (:flake state) 200 (:y-param state))    ;; changed in step 2-1
+  )
 
 (q/defsketch practice
   :title "Clara's Quil practice"
-  :size [1000 1000]
+  :size [500 500]
   :setup setup
-  :update update
+  :update update                                   ;; added in step 2-1
   :draw draw
+  :features [:keep-on-top]
   :middleware [m/fun-mode])
 ```
 
-When Clara ran this code--hey! She saw that the snowflake was falling
+When Clara ran this code--hey! She saw the snowflake was falling
 down.
 
 
