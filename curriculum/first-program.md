@@ -231,7 +231,8 @@ drawn.
 This is our sketch. You can set attributes of the sketch such as the
 title and size. You also tell it what are the names of the setup and
 draw functions. These have to match exactly the function names we used
-above.
+above. The last line is to make our drawing app window keep on top
+of everything else.
 
 Now press `Ctrl + Shift + Enter` (or `Cmd + Shift + Enter`) to
 evaluate the file. Your drawing should appear.
