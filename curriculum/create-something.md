@@ -10,7 +10,7 @@ I want to create something cool with Quil!
 
 ## Step 1. Snowflake on a blue background
 
-Clara considered where to start.
+Clara considered where to start while looking at her first drawing application.
 Then, a small light turned on in her mind, "a white snowflake on a blue background looks nice."
 What she wanted to know was how to make a background blue and put a snowflake on it.
 Clara already learned how to find the way. It was:
@@ -18,7 +18,7 @@ Clara already learned how to find the way. It was:
 1. Go to the API documentation website
 2. Google it
 
-So, Clara went to the Quil API web site,
+Following that, Clara went to the Quil API web site,
 [http://quil.info/api](http://quil.info/api), and found the
 [Loading and Displaying](http://quil.info/api/image/loading-and-displaying)
 section. Then, she found the
@@ -26,10 +26,17 @@ section. Then, she found the
 function.
 
 Then, she googled and found a StackOverflow question,
-[Load/display image in clojure with quil](http://stackoverflow.com/questions/18714941/load-display-image-in-clojure-with-quil),
-which looked like what she needed.
+[Load/display image in clojure with quil](http://stackoverflow.com/questions/18714941/load-display-image-in-clojure-with-quil), which
+looked like helpful.
+She also went to ClojureBridge drawing resources section,
+[Quil and Processing Resources](https://github.com/ClojureBridge/drawing#quil-and-processing-resources).
+Browsing at web sites listed there for a while, she found an interesting Xmas tree
+example,
+[xmas-tree.clj](https://github.com/quephird/fun-with-quil/blob/master/src/fun_with_quil/animations/xmas-tree.clj),
+which displayed a xmas tree read from a file in a window.
+"This should be what I want," she delighted in getting those useful search results.
 
-Those gave her enough information to accomplish step 1.
+OK, for now, she got enough information to accomplish step 1.
 
 At the ClojureBridge workshop, Clara went though the Quil app
 tutorial,
@@ -44,17 +51,18 @@ Clara added a new file under `src/drawing` directory with the name
 below:
 
 ```
-| LICENSE
-| README.md
-| project.clj
-| src
-| | drawing
-| | | core.clj
-| | | lines.clj
-| | | practice.clj
+drawing
+├── LICENSE
+├── README.md
+├── project.clj
+└── src
+    └── drawing
+        ├── core.clj
+        ├── lines.clj
+        └── practice.clj
 ```
 
-### Make the source code clojure-ish
+### Add namespace - make the source code clojure-ish
 
 First, Clojure source code has a namespace declaration, so Clara
 copy-pasted `ns` from the top of her `lines.clj` file. But, she
@@ -91,6 +99,23 @@ Now, `practice.clj` looks like this:
   :draw draw
   )
 ```
+
+```clojure
+1(ns drawing.practice
+2    (:require [quil.core :as q]))
+3
+4(defn setup [])
+5
+6(defn draw [])
+7
+8(q/defsketch practice
+9  :title "Clara's Quil practice"
+10  :size [500 500]
+11  :setup setup
+12  :draw draw
+13  :features [:keep-on-top])
+```
+
 
 ### Load snowflake and background images
 
