@@ -12,18 +12,23 @@
    :background (q/load-image "images/blue_background.png")
    :y-params [{:y 10 :speed 1} {:y 150 :speed 4} {:y 50 :speed 2}]})
 
-(defn update-y
+#_(defn update-y
   [m]
   (let [y (:y m)
         speed (:speed m)]
-    (if (>= y (q/height))         ;; y is greater than or equal to image height?
-      (assoc m :y 0)              ;; true - get it back to the 0 (top)
-      (assoc m :y (+ y speed))))) ;; false - add y value and speed
+    (if (>= y (q/height))           ;; y is greater than or equal to image height?
+      (assoc m :y 0)                ;; true - get it back to the 0 (top)
+      (update-in m [:y] + speed)))) ;; false - add y value and speed
+
+(defn update-y
+  [{y :y speed :speed :as m}]
+  (if (>= y (q/height))          ;; y is greater than or equal to image height?
+    (assoc m :y 0)               ;; true - get it back to the 0 (top)
+    (update-in m [:y] + speed))) ;; false - add y value and speed
 
 (defn update [state]
-  (let [y-params (:y-params state)
-        updated  (map #(update-y %) y-params)]
-    (assoc state :y-params updated)))
+  (let [y-params (:y-params state)]
+    (assoc state :y-params (map update-y y-params))))
 
 (defn draw [state]
   ;; drawing blue background and mutiple snowflakes on it

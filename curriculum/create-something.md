@@ -129,7 +129,7 @@ drawing
 
 So far, the images were ready, the next step was to code using the Quil API.
 
-Clare was back to the xmas tree example, and learned her application needed
+Clara was back to the xmas tree example and learned her application needed
 one more library to add, `[quil.middleware :as m]` within `:require`.
 This was a quite new experience to her. To figure out what's that and how
 to use, Clara walked through the document
@@ -166,10 +166,10 @@ At this moment, `practice.clj` looks like this:
 
 ### step 1-6: Load snowflake and background images
 
-Clare already knew the final pieces to load images were:
+Clara already knew the final pieces to load images were:
 
-1. in `setup` function, load images and return those as a state
-2. in `draw` function, look the contents in `state` and draw images
+1. in `setup` function, load images and return those as a **state**
+2. in `draw` function, look the contents in `state` argument and draw images
 
 So, she added a few lines of code to the `setup` and `draw` functions in
 her `practice.clj`. She was careful when writing the image filenames
@@ -241,7 +241,7 @@ As far as she searched, moving some pieces in the image is called
 
 So-called animations repeat these steps again and again.
 
-### step 2-1: Add state update
+### step 2-1: Add `y` parameter update
 
 "Well," Clara thought, "What does 'moving the snowflake like it was
 falling down' mean in terms of programming?"
@@ -270,12 +270,52 @@ parameter. How could she increment the `y` value by one?
 
 Yes, Clojure has the `inc` function. This is the function she used.
 
-Here's what she did:
+To update `y` parameter:
+- Add an initial `y` parameter in the map of `setup` function, which
+  represents **state**
 
-1. Add an initial `y` parameter in the map of `setup` function
-2. Add a new function `update` which will increment the `y` parameter by one
-3. Change `q/image` function to see the `y` parameter in `state`
-4. Add the `update` function in the `q/defsketch` form
+    ```clojure
+    {:flake (q/load-image "images/white_flake.png")
+     :background (q/load-image "images/blue_background.png")
+     :y-param 10}
+    ```
+
+-  Add a new function `update` which will increment the `y` parameter by one
+
+    ```clojure
+    (defn update [state]
+      ;; updating y paraemter by one
+      (update-in state [:y-param] inc))
+    ```
+
+-  Add the `update` function in the `q/defsketch` form
+
+    ```clojure
+    (q/defsketch practice
+      :title "Clara's Quil practice"
+      :size [500 500]
+      :setup setup
+      :update update
+      :draw draw
+      :features [:keep-on-top]
+      :middleware [m/fun-mode])
+    ```
+
+### step 2-2: Draw the image on updated position
+
+So far, the app got the feature to update `y` parameter;
+however, this is not enough to make the snowflake falling down.
+The snowflakes should be put on the updated position.
+
+Clara changed the `draw` function so that `q/image` could have updated
+`y` parameter.
+
+```clojure
+(defn draw [state]
+  ;; drawing blue background and a snowflake on it
+  (q/background-image (:background state))
+  (q/image (:flake state) 200 (:y-param state)))
+```
 
 She added one more function, `(q/smooth)`, to `setup` since this would
 make animation move smoothly.
@@ -288,7 +328,7 @@ At this point, `practice.clj` looks like this:
             [quil.middleware :as m]))
 
 (defn setup []
-  (q/smooth)                                      ;; added in step 2-1
+  (q/smooth)                                      ;; added in step 2-2
   {:flake (q/load-image "images/white_flake.png")
    :background (q/load-image "images/blue_background.png")
    :y-param 10}                                   ;; added in step 2-1
@@ -300,7 +340,7 @@ At this point, `practice.clj` looks like this:
 
 (defn draw [state]
   (q/background-image (:background state))
-  (q/image (:flake state) 200 (:y-param state))    ;; changed in step 2-1
+  (q/image (:flake state) 200 (:y-param state))    ;; changed in step 2-2
   )
 
 (q/defsketch practice
@@ -333,9 +373,18 @@ parameter should go back to `0`. Otherwise, the `y` parameter should
 be incremented by one. That said, there exist two cases to update `y`
 parameter.
 
-Clara recalled `if` would be used for
-[Flow Control](https://github.com/ClojureBridge/curriculum/blob/master/outline/flow_control.md)
-at the ClojureBridge workshop. It looked `if` handles the two cases well.
+Clara recalled `if` was used for
+[Flow Control](http://clojurebridge.github.io/curriculum/outline/flow_control.html)
+at the ClojureBridge workshop. It looked `if` would handle the two cases
+well like this:
+
+```clojure
+(defn update [state]
+  (if (>= (:y-param state) (q/height)) ;; y-param is greater than or equal to image height?
+    (assoc state :y-param 0)           ;; true - get it back to the 0 (top)
+    (update-in state [:y-param] inc)   ;; false - update y paraemter by one
+    ))
+```
 
 So, she used `if` to make the snowflake go back to the top in the
 update function.
@@ -379,7 +428,7 @@ the bottom line.
 
 ## Step 4. Make more snowflakes falling down from top to bottom
 
-Clare thought, "It's nice to look at the snowflake falls down many
+Clara thought, "It's nice to look at the snowflake falls down many
 times. But I have only one snowflake. Can I add more?"
 She wanted to see more snowflakes falling down: one or more on the left
 half, as well as one or more on the right half.
@@ -387,7 +436,7 @@ half, as well as one or more on the right half.
 Again, she needed to express her thoughts by the words of programming
 world. Looking at her code already written, she figures out, "This
 would be 'draw multiple images with the different `x` parameters.'"
-The easiest way would be to copy-paste `(q/image @flake 400 y-param)`
+The easiest way would be to copy-paste `(q/image (:flake state) 200 (:y-param state)`
 multiple times with the different `x` parameters. For example,
 
 ```clojure
@@ -400,16 +449,27 @@ But, for Clara, this did not look nice; she learned a lot about
 Clojure and wanted to use what she knew.
 
 First, she thought about how to keep multiple `x` parameters. She
-remembered there was a `vector` in the
-[Data Structures](https://github.com/ClojureBridge/curriculum/blob/master/outline/data_structures.md)
+remembered there was a `Vectors` in the
+[Data Structures](http://clojurebridge.github.io/curriculum/outline/data_structures.html)
 section, which looked a good fit in this case.
 
 Here's what she did to add more snowflakes:
 
-1. Add a vector which has multiple `x` parameters assigned to a name  with `def`.
+1. Add a vector which has multiple `x` parameters assigned to a name
+with `def`.
+
+    ```clojure
+    (def x-params [10 200 390]) ;; x parameters for three snowflakes
+    ```
+
 2. Draw snowflakes as many times as the number of `x`-params using `doseq`.
 
-* See, [doseq](http://clojuredocs.org/clojure.core/doseq) for more info.
+    ```clojure
+    (doseq [x x-params]
+      (q/image (:flake state) x (:y-param state)))
+    ```
+
+* See, [doseq](http://clojurebridge.github.io/curriculum/outline/sequences.html#/3)
 
 At this point, `practice.clj` looks like this:
 
@@ -451,8 +511,6 @@ At this point, `practice.clj` looks like this:
 
 ## Step 5. Make snowflakes keep falling down at different speed
 
-So far, so good.
-
 Although her app looked lovely, Clara felt something was not quite
 right. In her window, all three snowflakes fell down at the same
 speed like a robots' march. It did not look natural. So, she wanted to
@@ -460,7 +518,9 @@ make them fall down at different speed.
 
 Using programming terms, the problem here is that all three snowflakes
 share the same `y` parameter.
-Given that adding multiple `y` parameters would solve the problem--but how?
+Given that using multiple `y` parameters would solve the problem--but how?
+
+### step 5-1 Change `y` parameters to maps with speeds
 
 As she used `vector` for the x parameters, the `vector` would be a good data
 structure to have different `y` parameters as well. However, this
@@ -469,56 +529,132 @@ parameters, height and speed. Having these two, Clara can change the
 falling speed of each snowflake.
 
 Well, she was back to ClojureBridge curriculum and went to
-[Data Structures](https://github.com/ClojureBridge/curriculum/blob/master/outline/data_structures.md)
-section. There was a `Maps` data structure which allowed her to save
-multiple parameters. Then, she changed the `y-param` from a
+[Data Structures](http://clojurebridge.github.io/curriculum/outline/data_structures.html).
+There was a data structure called `Maps` which allowed her to save
+multiple parameters. Looking at maps examples, she changed the `y-param` from a
 single value to a vector of 3 maps. Also, the keyword was changed from
-`y-param` to `y-params`.
+`y-param` to `y-params`. Now her initial **state** became this:
 
 ```clojure
-:y-params [{:y 10 :speed 1} {:y 150 :speed 4} {:y 50 :speed 2}]
+{:flake (q/load-image "images/white_flake.png")
+ :background (q/load-image "images/blue_background.png")
+ :y-params [{:y 10 :speed 1} {:y 150 :speed 4} {:y 50 :speed 2}]}
 ```
 
 It was a nice data structure, actually maps in a vector in a map
-including outer map created in `setup` function.
-However, her `update` function was not a simple one anymore. What she
-had to do was updating all `y` values in the three maps.
-Additionally, update a vector
+including outer map. Downside is, her `update` function was not a
+simple one anymore. What she had to do was updating all `y` values in
+the three maps within a vector.
 
-She had already learned how to get and update the values in the
-map. There was an `assoc` function, which would change the value in a
-map, that appeared in
-[More Functions](https://github.com/ClojureBridge/curriculum/blob/master/outline/functions2.md). (See
-[http://clojuredocs.org/clojure.core/assoc](http://clojuredocs.org/clojure.core/assoc)
-for more info)
 
-To iterate over all elements in a vector, Clojure has a few
-functions. But, be careful! The `update` function must return the
-updated state.
+### step 5-2 Update values in maps in the vector
 
-So, she used `for` to update the state like this:
+Thinking both map and vector at the same time was confusing to her, so
+she decided to think about map only. Each map has `y` parameter and
+`speed`:
 
 ```clojure
-(for [p state]
-  (if (>= (:y p) (q/height))
-    (assoc p :y 0)
-    (assoc p :y (+ (:y p) (:speed p))))
-  )
+{:y 150 :speed 4}
+```
+as an initial **state**. The map should be updated to:
+
+```clojure
+{:y 154 :speed 4}
 ```
 
-Another challenge was the `draw` function.
+To accomplish this map update, Clara added `update-y` function:
 
+```clojure
+(defn update-y
+  [m]
+  (let [y (:y m)
+        speed (:speed m)]
+    (if (>= y (q/height))           ;; y is greater than or equal to image height?
+      (assoc m :y 0)                ;; true - get it back to the 0 (top)
+      (update-in m [:y] + speed)))) ;; false - add y value and speed
+```
+
+#### [bonus] destructuring
+
+Using Clojure's destructuring, we can write `update-y` function like
+this:
+
+```clojure
+(defn update-y
+  [{y :y speed :speed :as m}]
+  (if (>= y (q/height))
+    (assoc m :y 0)
+    (update-in m [:y] + speed)))
+```
+
+As in the code, we can skip let binding.
+
+
+### step 5-3 Update maps in the vector
+
+Next step is to update maps in the vector using `update-y` function.
+Before writing this part, Clara cut down the problem to focus on
+updating a vector: how to update contents in a vector. She remembered
+there was a `map` function which allowed her to apply a function to
+each element in the vector.
+[`map` function](http://clojurebridge.github.io/curriculum/outline/functions.html#/9)
+
+For example:
+
+```clojure
+(map inc [1 2 3]) ;=> (2 3 4)
+```
+
+> Clojure has a `map` function and `map` data structure.
+> Be careful, this is confusing.
+> In Python, function is a `map`, data structure is dictionary.
+> In Ruby, function is a `map` or `collect`, data structure is hash.
+
+She tested the function on the insta-REPL:
+
+```clojure
+(defn update-test
+  [m]
+  (let [y (:y m)
+        speed (:speed m)]
+    (if (>= y 500)
+      (assoc m :y 0)
+      (update-in m [:y] + speed))))
+
+(def y-params [{:y 10 :speed 1} {:y 150 :speed 4} {:y 50 :speed 2}])
+
+(map update-test y-params)
+;=> ({:y 11, :speed 1} {:y 154, :speed 4} {:y 52, :speed 2})
+```
+
+It looked good, so she got back to her `practice.clj` file to change
+`update` function. This function should return the **state** as the
+map which includes `:y-params` key with the update vector as a value.
+Her `update` function became like this:
+
+```clojure
+(defn update [state]
+  (let [y-params (:y-params state)]
+    (assoc state :y-params (map update-y y-params))))
+```
+
+
+### step 5-4 Update draw function to see maps in the vector
+
+Another challenge was the `draw` function update to see values in the
+maps which were in the vector.
 Clara found a couple of ways to repeat something in Clojure. Among
 them, she chose `dotimes` and `nth` to repeatedly draw images; the
-`nth` function is the one in
-[More Functions](https://github.com/ClojureBridge/curriculum/blob/master/outline/functions2.md)
+`nth` function is the one in the curriculum:
+[Data Structures](http://clojurebridge.github.io/curriculum/outline/data_structures.html#/6)
 
 In this case, she knew there were exactly 3 snowflakes, so she changed
 the code to draw 3 snowflakes as shown below:
 
 ```clojure
-(dotimes [n 3]
-    (q/image @flake (nth x-params n) (:y (nth state n))))
+(let [y-params (:y-params state)]
+    (dotimes [n 3]
+      (q/image (:flake state) (nth x-params n) (:y (nth y-params n)))))
 ```
 
 At this point, her entire `practice.clj` looks like this:
@@ -528,38 +664,43 @@ At this point, her entire `practice.clj` looks like this:
   (:require [quil.core :as q]
             [quil.middleware :as m]))
 
-(def flake (ref nil))        ;; reference to snowflake image
-(def background (ref nil))   ;; reference to blue background image
-(def x-params [100 400 700]) ;; x parameters for three snowflakes
+(def x-params [10 200 390]) ;; x parameters for three snowflakes
 
 (defn setup []
   ;; loading two images
-  (dosync
-   (ref-set flake (q/load-image "images/white_flake.png"))
-   (ref-set background (q/load-image "images/blue_background.png")))
   (q/smooth)
   (q/frame-rate 60)
-  [{:y 10 :speed 1} {:y 300 :speed 5} {:y 100 :speed 3}])
+  {:flake (q/load-image "images/white_flake.png")
+   :background (q/load-image "images/blue_background.png")
+   :y-params [{:y 10 :speed 1} {:y 150 :speed 4} {:y 50 :speed 2}]})  ;; changed in step 5-1
+
+;; update-y function was added in step 5-2
+(defn update-y
+  [m]
+  (let [y (:y m)
+        speed (:speed m)]
+    (if (>= y (q/height))
+      (assoc m :y 0)
+      (update-in m [:y] + speed))))
 
 (defn update [state]
-  (for [p state]
-    (if (>= (:y p) (q/height)) ;; y is greater than or equal to image height?
-      (assoc p :y 0)                      ;; true - get it back to the 0 (top)
-      (assoc p :y (+ (:y p) (:speed p)))) ;; false - increment y parameter by one
-    ))
+  (let [y-params (:y-params state)]                   ;; update function
+    (assoc state :y-params (map update-y y-params)))) ;; was changed in step 5-3
 
 (defn draw [state]
   ;; drawing blue background and mutiple snowflakes on it
-  (q/background-image @background)
-  (dotimes [n 3]
-    (q/image @flake (nth x-params n) (:y (nth state n)))))
+  (q/background-image (:background state))
+  (let [y-params (:y-params state)]   ;; three lines below were changed in step 5-4
+    (dotimes [n 3]
+      (q/image (:flake state) (nth x-params n) (:y (nth y-params n))))))
 
 (q/defsketch practice
   :title "Clara's Quil practice"
-  :size [1000 1000]
+  :size [500 500]
   :setup setup
   :update update
   :draw draw
+  :features [:keep-on-top]
   :middleware [m/fun-mode])
 ```
 
@@ -612,42 +753,42 @@ It looked nice and Clojure-ish.
 At this moment, her entire `practice.clj` looks like this:
 
 ```clojure
-(ns drawing.practice
-  (:require [quil.core :as q]
-            [quil.middleware :as m]))
-
-(def flake (ref nil))        ;; reference to snowflake image
-(def background (ref nil))   ;; reference to blue background image
-
 (defn setup []
   ;; loading two images
-  (dosync
-   (ref-set flake (q/load-image "images/white_flake.png"))
-   (ref-set background (q/load-image "images/blue_background.png")))
   (q/smooth)
   (q/frame-rate 60)
-  [{:x 100 :y 10 :speed 1} {:x 400 :y 300 :speed 5} {:x 700 :y 100 :speed 3}])
+  {:flake (q/load-image "images/white_flake.png")
+   :background (q/load-image "images/blue_background.png")
+   :params [{:x 10  :y 10  :speed 1}
+            {:x 200 :y 150 :speed 4}
+            {:x 390 :y 50  :speed 2}]})
+
+(defn update-y
+  [y speed]
+  (if (>= y (q/height))  ;; p is greater than or equal to image height?
+    0                    ;; true - get it back to the 0 (top)
+    (+ y speed)))        ;; false - add y value and speed
 
 (defn update [state]
-  (for [p state]
-    (if (>= (:y p) (q/height)) ;; y is greater than or equal to image height?
-      (assoc p :y 0)                      ;; true - get it back to the 0 (top)
-      (assoc p :y (+ (:y p) (:speed p)))) ;; false - add a value of speed
-    ))
+  (let [params  (:params state)
+        updated (map #(update-in % [:y] update-y (:speed %)) params)]
+    (assoc state :params updated)))
 
 (defn draw [state]
   ;; drawing blue background and mutiple snowflakes on it
-  (q/background-image @background)
-  (dotimes [n 3]
-    (let [snowflake (nth state n)]
-      (q/image @flake (:x snowflake) (:y snowflake)))))
+  (q/background-image (:background state))
+  (let [snowflakes (:params state)]
+    (dotimes [n 3]
+      (let [snowflake (nth snowflakes n)]
+        (q/image (:flake state) (:x snowflake) (:y snowflake))))))
 
 (q/defsketch practice
   :title "Clara's Quil practice"
-  :size [1000 1000]
+  :size [500 500]
   :setup setup
   :update update
   :draw draw
+  :features [:keep-on-top]
   :middleware [m/fun-mode])
 ```
 
