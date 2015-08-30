@@ -403,10 +403,10 @@ At this point, `practice.clj` looks like this:
    :y-param 10})
 
 (defn update [state]
-  ;; these three lines are added in step 3
-  (if (>= (:y-param state) (q/height))  ;; tests y-param is bigger than height
-    (assoc state :y-param 0)            ;; true - get it back to 0
-    (update-in state [:y-param] inc)))  ;; false - increment by 1
+  ;; these three lines were added in step 3
+  (if (>= (:y-param state) (q/height))
+    (assoc state :y-param 0)
+    (update-in state [:y-param] inc)))
 
 (defn draw [state]
   (q/background-image (:background state))
@@ -478,7 +478,7 @@ At this point, `practice.clj` looks like this:
   (:require [quil.core :as q]
             [quil.middleware :as m]))
 
-(def x-params [10 200 390]) ;; x params are added in step 4
+(def x-params [10 200 390])                      ;; added in step 4
 
 (defn setup []
   (q/smooth)
@@ -493,7 +493,7 @@ At this point, `practice.clj` looks like this:
 
 (defn draw [state]
   (q/background-image (:background state))
-  (doseq [x x-params]                              ;; two lines are changed
+  (doseq [x x-params]                              ;; two lines were changed
     (q/image (:flake state) x (:y-param state))))  ;; in step 4
 
 (q/defsketch practice
@@ -525,7 +525,7 @@ Given that using multiple `y` parameters would solve the problem--but how?
 As she used `vector` for the x parameters, the `vector` would be a good data
 structure to have different `y` parameters as well. However, this
 should not be a simple vector since each snowflake will have two
-parameters, height and speed. Having these two, Clara can change the
+parameters, height and speed. Having these two, Clara could change the
 falling speed of each snowflake.
 
 Well, she was back to ClojureBridge curriculum and went to
@@ -542,8 +542,8 @@ single value to a vector of 3 maps. Also, the keyword was changed from
 ```
 
 It was a nice data structure, actually maps in a vector in a map
-including outer map. Downside is, her `update` function was not a
-simple one anymore. What she had to do was updating all `y` values in
+including outer map. Downside was, her `update` function would not be
+simple anymore. What she had to do was updating all `y` values in
 the three maps within a vector.
 
 
@@ -556,7 +556,8 @@ she decided to think about map only. Each map has `y` parameter and
 ```clojure
 {:y 150 :speed 4}
 ```
-as an initial **state**. The map should be updated to:
+as an initial **state**. The very next moment, speed should be added
+to y value. As a result, the map should be updated to:
 
 ```clojure
 {:y 154 :speed 4}
@@ -641,7 +642,7 @@ Her `update` function became like this:
 
 ### step 5-4 Update draw function to see maps in the vector
 
-Another challenge was the `draw` function update to see values in the
+Another challenge was the `draw` function change to see values in the
 maps which were in the vector.
 Clara found a couple of ways to repeat something in Clojure. Among
 them, she chose `dotimes` and `nth` to repeatedly draw images; the
@@ -664,12 +665,10 @@ At this point, her entire `practice.clj` looks like this:
   (:require [quil.core :as q]
             [quil.middleware :as m]))
 
-(def x-params [10 200 390]) ;; x parameters for three snowflakes
+(def x-params [10 200 390])
 
 (defn setup []
-  ;; loading two images
   (q/smooth)
-  (q/frame-rate 60)
   {:flake (q/load-image "images/white_flake.png")
    :background (q/load-image "images/blue_background.png")
    :y-params [{:y 10 :speed 1} {:y 150 :speed 4} {:y 50 :speed 2}]})  ;; changed in step 5-1
@@ -688,7 +687,6 @@ At this point, her entire `practice.clj` looks like this:
     (assoc state :y-params (map update-y y-params)))) ;; was changed in step 5-3
 
 (defn draw [state]
-  ;; drawing blue background and mutiple snowflakes on it
   (q/background-image (:background state))
   (let [y-params (:y-params state)]   ;; three lines below were changed in step 5-4
     (dotimes [n 3]
@@ -704,83 +702,106 @@ At this point, her entire `practice.clj` looks like this:
   :middleware [m/fun-mode])
 ```
 
-When she ran the code above, three snowflakes kept falling down at
+When she ran the code, three snowflakes kept falling down at
 different speeds. It looked more natural.
 
 
 ## Step 6. Do some "refactoring"
 
-Clara looked at her `practice.clj`, thinking her code got longer.
+Clara looked at her `practice.clj` thinking her code got longer for a while.
 
-When she looked at her code from top to bottom again, she thought
-"`x-params` may be part of the state." So, she changed her `state` to
-have the x parameter also, like
-`[{:x 100 :y 10 :speed 1} {:x 400 :y 300 :speed 5} {:x 700 :y 100 :speed 3}]`.
-
-She found that this new format was easy to maintain the state of each snowflake.
-
-Now, Clara also needed to change the part that drew the snowflakes.
-
-At first, she wrote it like this:
+Scanning her code from top to bottom again, she thought
+"`x-params` may be part of the **state**," for example:
 
 ```clojure
+[{:x 10 :y 10 :speed 1} {:x 200 :y 150 :speed 4} {:x 390 :y 50 :speed 2}]
+```
+
+She found that this new data structure was easy to maintain the state of each snowflake.
+
+So, she changed her `setup` function to return the initial **state** which
+included x parameters also. The key name was changed from `:y-params`
+to `:params`:
+
+```clojure
+{:flake (q/load-image "images/white_flake.png")
+   :background (q/load-image "images/blue_background.png")
+   :params [{:x 10  :y 10  :speed 1}
+            {:x 200 :y 150 :speed 4}
+            {:x 390 :y 50  :speed 2}]}
+```
+
+Clara stared at `update-y` function and concluded to leave as it was.
+Since existence of `:x` and its value didn't affect updating y value.
+The function returned the map with three keys with each value.
+
+What about `update` function? This needed a little change since key
+name was changed from `:y-params` to `:params`.
+
+```clojure
+(defn update [state]
+  (let [params (:params state)]
+    (assoc state :params (map update-y params))))
+```
+
+The `draw` function would have a bigger change since the way to
+extract x values was changed.
+At first, Clara changed `dotimes` function like this:
+
+```clojure
+(let [params (:params state)]
   (dotimes [n 3]
-    (q/image @flake (:x (nth state n)) (:y (nth state n))))
+    (q/image (:flake state) (:x (nth params n)) (:y (nth params n)))))
 ```
 
-But, the exact the same thing, `(nth state n)`, appeared twice.
-
-"Is there anything to avoid repetition?" she thought. She went to
-[Clojure Cheat Sheet](http://clojure.org/cheatsheet) to figure out the
-`dotimes` syntax. Then, she clicked on `dotimes` in the "Macros,
-Loops" section and saw the syntax described in
-[dotimes](http://clojuredocs.org/clojure.core/dotimes).
-
-It says `(dotimes bindings & body)`.
-
-Clara remembered that she learned `let` in
-[Flow Control](https://github.com/ClojureBridge/curriculum/blob/master/outline/flow_control.md),
-which was "bindings". So, she rewrote it using `let` like this:
+But, the exact the same thing, `(nth params n)`, appeared twice.
+"Is there anything better to avoid repetition?" she thought.
+The answer was easy - use `let` binding within `dotimes` function.
+Using `let`, her `dotimes` form turned to:
 
 ```clojure
-(dotimes [n 3]
-  (let [snowflake (nth state n)]
-    (q/image @flake (:x snowflake) (:y snowflake))))
+(let [params (:params state)]
+  (dotimes [n 3]
+    (let [param (nth params n)]
+      (q/image (:flake state) (:x param) (:y param)))))
 ```
 
-It looked nice and Clojure-ish.
+The last line above got much cleaner!
 
 At this moment, her entire `practice.clj` looks like this:
 
 ```clojure
+(ns drawing.practice
+  (:require [quil.core :as q]
+            [quil.middleware :as m]))
+
 (defn setup []
-  ;; loading two images
   (q/smooth)
-  (q/frame-rate 60)
   {:flake (q/load-image "images/white_flake.png")
    :background (q/load-image "images/blue_background.png")
-   :params [{:x 10  :y 10  :speed 1}
+   :params [{:x 10  :y 10  :speed 1}                       ;; changed in step 6
             {:x 200 :y 150 :speed 4}
             {:x 390 :y 50  :speed 2}]})
 
 (defn update-y
-  [y speed]
-  (if (>= y (q/height))  ;; p is greater than or equal to image height?
-    0                    ;; true - get it back to the 0 (top)
-    (+ y speed)))        ;; false - add y value and speed
+  [m]
+  (let [y (:y m)
+        speed (:speed m)]
+    (if (>= y (q/height))
+      (assoc m :y 0)
+      (update-in m [:y] + speed))))
 
 (defn update [state]
-  (let [params  (:params state)
-        updated (map #(update-in % [:y] update-y (:speed %)) params)]
-    (assoc state :params updated)))
+  (let [params (:params state)]                    ;; changed to params in step 6
+    (assoc state :params (map update-y params))))  ;;
 
 (defn draw [state]
   ;; drawing blue background and mutiple snowflakes on it
   (q/background-image (:background state))
-  (let [snowflakes (:params state)]
-    (dotimes [n 3]
-      (let [snowflake (nth snowflakes n)]
-        (q/image (:flake state) (:x snowflake) (:y snowflake))))))
+  (let [params (:params state)]                            ;; changed in step 6
+    (dotimes [n 3]                                         ;;
+      (let [param (nth params n)]                          ;;
+        (q/image (:flake state) (:x param) (:y param)))))) ;;
 
 (q/defsketch practice
   :title "Clara's Quil practice"
@@ -792,19 +813,19 @@ At this moment, her entire `practice.clj` looks like this:
   :middleware [m/fun-mode])
 ```
 
-She saw the exact same result as the previous code, but her code
+She saw the exact same result as the step 5, but her code
 looked nicer. This sort of work is often called "refactoring".
 
 ## Step 7. Make snowflakes swing as they fall down
 
-Clara was getting familiar with Clojure coding. Her Quil app was
-getting much better, as well!
+Clara was getting much familiar with Clojure coding. Her Quil app was
+getting much more fantastic, as well!
 
 However, looking at the snowflakes falling down, she thought she could
 swing them left and then right as they fall down. Right now, all of the
 snowflakes were falling straight down.
 
-In programming terms, the `x` parameter should both increase and
+In programming terms, the `x` parameter should either increase or
 decrease when the value is updated. This means that the `update`
 function should update the `x` parameters as well as the `y`
 parameters.
