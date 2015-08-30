@@ -3,7 +3,6 @@
             [quil.middleware :as m]))
 
 (def x-params [10 200 390]) ;; x parameters for three snowflakes
-(def speeds [1 4 2])
 
 (defn setup []
   ;; loading two images
@@ -11,17 +10,19 @@
   (q/frame-rate 60)
   {:flake (q/load-image "images/white_flake.png")
    :background (q/load-image "images/blue_background.png")
-   :y-params [10 150 50]})
+   :y-params [{:y 10 :speed 1} {:y 150 :speed 4} {:y 50 :speed 2}]})
 
 (defn update-y
-  [y speed]
-  (if (>= y (q/height))  ;; p is greater than or equal to image height?
-    0                    ;; true - get it back to the 0 (top)
-    (+ y speed)))        ;; false - add y value and speed
+  [m]
+  (let [y (:y m)
+        speed (:speed m)]
+    (if (>= y (q/height))         ;; y is greater than or equal to image height?
+      (assoc m :y 0)              ;; true - get it back to the 0 (top)
+      (assoc m :y (+ y speed))))) ;; false - add y value and speed
 
 (defn update [state]
   (let [y-params (:y-params state)
-        updated  (map #(update-y %1 %2) y-params speeds)]
+        updated  (map #(update-y %) y-params)]
     (assoc state :y-params updated)))
 
 (defn draw [state]
@@ -29,7 +30,7 @@
   (q/background-image (:background state))
   (let [y-params (:y-params state)]
     (dotimes [n 3]
-      (q/image (:flake state) (nth x-params n) (nth y-params n)))))
+      (q/image (:flake state) (nth x-params n) (:y (nth y-params n))))))
 
 (q/defsketch practice
   :title "Clara's Quil practice"
