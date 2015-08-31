@@ -780,8 +780,8 @@ At this moment, her entire `practice.clj` looks like this:
   {:flake (q/load-image "images/white_flake.png")
    :background (q/load-image "images/blue_background.png")
    :params [{:x 10  :y 10  :speed 1}                       ;; changed in step 6
-            {:x 200 :y 150 :speed 4}
-            {:x 390 :y 50  :speed 2}]})
+            {:x 200 :y 150 :speed 4}                       ;;
+            {:x 390 :y 50  :speed 2}]})                    ;;
 
 (defn update-y
   [m]
@@ -816,26 +816,34 @@ At this moment, her entire `practice.clj` looks like this:
 She saw the exact same result as the step 5, but her code
 looked nicer. This sort of work is often called "refactoring".
 
-## Step 7. Make snowflakes swing as they fall down
+## Step 7. Make snowflakes swing as falling down
 
 Clara was getting much familiar with Clojure coding. Her Quil app was
 getting much more fantastic, as well!
 
-However, looking at the snowflakes falling down, she thought she could
-swing them left and then right as they fall down. Right now, all of the
-snowflakes were falling straight down.
+It was amusing to look at snowflakes falling down in different speeds.
+But, something she didn't like was... all of the snowflakes were
+falling straight down. This was much better than marching robots:
+however, it would be awesome if snowflakes were swinging left and
+right as falling down.
 
-In programming terms, the `x` parameter should either increase or
+In the words of programming, the `x` parameter should either increase or
 decrease when the value is updated. This means that the `update`
 function should update the `x` parameters as well as the `y`
-parameters.
+parameters so that snowflakes took a trace like this:
+
+![curve to fall down](images/curve.png)
+
+This would be a big challenge to her.
+
+### step 7-1 Add swing parameter to initial **state**
 
 To write this feature, she changed the initial state to this:
 
 ```clojure
-[{:x 100 :swing 10 :y 10 :speed 8}
- {:x 400 :swing 5 :y 300 :speed 11}
- {:x 700 :swing 8 :y 100 :speed 9}]
+[{:x 10 :swing 1 :y 10 :speed 1}
+ {:x 200 :swing 3 :y 100 :speed 4}
+ {:x 390 :swing 2 :y 50 :speed 2}]
 ```
 
 The map got a new `:swing` key, which holds a range of left and right
@@ -928,53 +936,53 @@ At this point, her entire `practice.clj` looks like this:
   (:require [quil.core :as q]
             [quil.middleware :as m]))
 
-(def flake (ref nil))        ;; reference to snowflake image
-(def background (ref nil))   ;; reference to blue background image
-
 (defn setup []
-  ;; loading two images
-  (dosync
-   (ref-set flake (q/load-image "images/white_flake.png"))
-   (ref-set background (q/load-image "images/blue_background.png")))
   (q/smooth)
-  (q/frame-rate 30)
-  [{:x 100 :swing 10 :y 10 :speed 8}
-   {:x 400 :swing 5 :y 300 :speed 11}
-   {:x 700 :swing 8 :y 100 :speed 9}])
+  {:flake (q/load-image "images/white_flake.png")
+   :background (q/load-image "images/blue_background.png")
+   :params [{:x 10  :swing 1 :y 10  :speed 1}
+            {:x 200 :swing 3 :y 100 :speed 4}
+            {:x 390 :swing 2 :y 50  :speed 2}]})
 
 (defn update-x
-  [x swing]
-  (let [start (- x swing)
-        end (+ x swing)
-        new-x (+ start (rand-int (- end start)))]
+  [m]
+  (let [x (:x m)
+        swing (:swing m)
+        y (:y m)]
     (cond
-     (> 0 new-x) (q/width)
-     (< (q/width) new-x) 0
-     :else new-x )))
+     (< x 0) (assoc m :x (q/width))                                  ;; too left
+     (< x (q/width)) (update-in m [:x] + (* swing (q/sin (/ y 50)))) ;; within frame
+     :else (assoc m :x 0))))                                         ;; too right
 
 (defn update-y
-  [y speed]
-  (if (>= y (q/height)) ;; y is greater than or equal to image height?
-    0                   ;; true - get it back to the 0 (top)
-    (+ y speed)))       ;; false - add a value of speed
+  [m]
+  (let [y (:y m)
+        speed (:speed m)]
+    (if (>= y (q/height))           ;; y is greater than or equal to image height?
+      (assoc m :y 0)                ;; true - get it back to the 0 (top)
+      (update-in m [:y] + speed)))) ;; false - add y value and speed
 
 (defn update [state]
-  (for [p state]
-    (merge p {:x (update-x (:x p) (:swing p)) :y (update-y (:y p) (:speed p))})))
+  (let [params  (:params state)
+        params (map update-y params)
+        params (map update-x params)]
+    (assoc state :params params)))
 
 (defn draw [state]
   ;; drawing blue background and mutiple snowflakes on it
-  (q/background-image @background)
-  (dotimes [n 3]
-    (let [snowflake (nth state n)]
-      (q/image @flake (:x snowflake) (:y snowflake)))))
+  (q/background-image (:background state))
+  (let [params (:params state)]
+    (dotimes [n 3]
+      (let [param (nth params n)]
+        (q/image (:flake state) (:x param) (:y param))))))
 
 (q/defsketch practice
   :title "Clara's Quil practice"
-  :size [1000 1000]
+  :size [500 500]
   :setup setup
   :update update
   :draw draw
+  :features [:keep-on-top]
   :middleware [m/fun-mode])
 ```
 
