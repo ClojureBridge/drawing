@@ -964,11 +964,11 @@ first to last one by one. The `update` function turned to this:
 ```
 
 The first binding assigns params vector to a name, `params`. The second
-binding updates y values in maps in the vector and assigns to the
+binding updates y values in the maps in vector and assigns to the
 name, `params`. The third binding updates x values in the maps in
-vector and assigns to the name, `param`. When `param` comes to the
+vector and assigns to the name, `params`. When `params` comes to the
 body of `let` function, in other words, the line of `assoc`, both x
-and y values are updated.
+and y values are already updated.
 
 These were all to swing the snowflakes. She could use `draw` function
 as it was.
