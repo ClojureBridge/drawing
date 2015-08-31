@@ -862,7 +862,7 @@ She changed the initial **state** to have swing parameter like this:
 The `swing` parameters should work to give different ranges between
 leftmost and rightmost of the curve.
 
-![swing of curve](images/curve-swing.png)
+![swing of curve](images/curve-range.png)
 
 
 Her `setup` function became like this:
@@ -900,62 +900,52 @@ If she considered the size of window, a couple more parameters were
 needed to make swing look nice, for example:
 
 ```
-x = x + a * sin(y/b)
+x = x + a * sin(y / b)
 ```
 
-The parameter `a` exactly works as the `swing` she added to **state**.
-When the `swing` is 1 and 3;
+The parameter `a` exactly works as the `swing` she added to the **state**.
+When the `swing` is 1, the curve traces like in the left image. While
+the `swing` is 3, the curve becomes the right image.
 
 ![swing is 1](images/1-sin-x.png)  ![swing is 3](images/3-sin-x.png)
 
+The parameter `b` adjusts distances between peeks. If the value is
+small, the snowflake goes left and right busily. On the other hand, if
+the value is big, the snowflakes moves loosely. Thinking of the size
+of window, 50 would be a good number for `b`.
+Given that, the update function would be:
 
-This means that the updated `x` parameter will have a value between
-the current `x` parameter + `swing` and the current `x` parameter -
-`swing`. For example, the first snowflake's next `x` parameter will be
-between `100 + 10` and `100 - 10`.
-
-To update the `x` parameter by a random value between some range, she
-needed to do something not just using the existing clojure functions.
-She found [`rand-int`](http://clojuredocs.org/clojure.core/rand-int)
-from [Clojure Cheat Sheet](http://clojure.org/cheatsheet), but it only
-returned between `0` and a specified value.
-
-Googling led her to this clojure code (from
-[https://github.com/sjl/roul/blob/master/src/roul/random.clj](https://github.com/sjl/roul/blob/master/src/roul/random.clj)
-):
-
-```clojure
-(defn rand-int
-  "Return a random int between start (inclusive) and end (exclusive).
-  start defaults to 0
-  "
-  ([end] (clojure.core/rand-int end))
-  ([start end] (+ start (clojure.core/rand-int (- end start)))))
+```
+x = x + swing * sin(y / 50)
 ```
 
-This was the random generation function that she wanted. But, she
-wanted a bit more.
-
-When the value goes to less than `0`, it should take the value of the
-image width, so that the snowflake will appear from the
-right. Likewise, when the value goes more than the image width, it
+Not just update x values, the function should handle the cases x is
+smaller than 0 (too left), and x is greater than image width (too
+right). When the x value goes to less than `0`, it should take the value of the
+image width, so that the snowflake will appear from the right.
+Likewise, when the x value goes to more than the image width, it
 should have value `0` so that the snowflake will appear from the left.
-
-She couldn't use `if` anymore here, since `if` takes only one
-predicate (comparison). Instead of `if`, she used `cond` and wrote an
-`update-x` funcion.
+Reflecting this conditions, her `update-x` function became
+like this:
 
 ```clojure
 (defn update-x
-  [x swing]
-  (let [start (- x swing)
-        end (+ x swing)
-        new-x (+ start (rand-int (- end start)))]
+  [m]
+  (let [x (:x m)
+        swing (:swing m)
+        y (:y m)]
     (cond
-     (> 0 new-x) (q/width)
-     (< (q/width) new-x) 0
-     :else new-x )))
+     (< x 0) (assoc m :x (q/width))                                  ;; too left
+     (< x (q/width)) (update-in m [:x] + (* swing (q/sin (/ y 50)))) ;; within frame
+     :else (assoc m :x 0))))                                         ;; too right
 ```
+
+In this function, she couldn't use `if` anymore since `if` takes only one
+predicate (comparison). Instead of `if`, she used `cond` which allowed
+her to handle multiple comparisons.
+
+
+
 
 This `update-x` function hinted to her that she could refactor the
 update function and write an `update-y` function. The below is the
