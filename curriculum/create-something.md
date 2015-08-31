@@ -175,6 +175,8 @@ So, she added a few lines of code to the `setup` and `draw` functions in
 her `practice.clj`. She was careful when writing the image filenames
 because it should reflect the actual directory structure.
 
+### `practice.clj` in step 1
+
 At this moment, `practice.clj` looks like this:
 
 ```clojure
@@ -320,6 +322,8 @@ Clara changed the `draw` function so that `q/image` could have updated
 She added one more function, `(q/smooth)`, to `setup` since this would
 make animation move smoothly.
 
+### `practice.clj` in step 2
+
 At this point, `practice.clj` looks like this:
 
 ```clojure
@@ -388,6 +392,8 @@ well like this:
 
 So, she used `if` to make the snowflake go back to the top in the
 update function.
+
+### `practice.clj` in step 3
 
 At this point, `practice.clj` looks like this:
 
@@ -470,6 +476,8 @@ with `def`.
     ```
 
 * See, [doseq](http://clojurebridge.github.io/curriculum/outline/sequences.html#/3)
+
+### `practice.clj` in step 4
 
 At this point, `practice.clj` looks like this:
 
@@ -658,6 +666,8 @@ the code to draw 3 snowflakes as shown below:
       (q/image (:flake state) (nth x-params n) (:y (nth y-params n)))))
 ```
 
+### `practice.clj` in step 5
+
 At this point, her entire `practice.clj` looks like this:
 
 ```clojure
@@ -719,9 +729,9 @@ Scanning her code from top to bottom again, she thought
 
 She found that this new data structure was easy to maintain the state of each snowflake.
 
-So, she changed her `setup` function to return the initial **state** which
-included x parameters also. The key name was changed from `:y-params`
-to `:params`:
+To use this new data structure, she changed her `setup` function to
+return the initial **state** which included x parameters also. The key
+name was changed from `:y-params` to `:params`:
 
 ```clojure
 {:flake (q/load-image "images/white_flake.png")
@@ -733,7 +743,7 @@ to `:params`:
 
 Clara stared at `update-y` function and concluded to leave as it was.
 Since existence of `:x` and its value didn't affect updating y value.
-The function returned the map with three keys with each value.
+The function returned the map with three key-value pairs with updated y value.
 
 What about `update` function? This needed a little change since key
 name was changed from `:y-params` to `:params`.
@@ -766,7 +776,9 @@ Using `let`, her `dotimes` form turned to:
       (q/image (:flake state) (:x param) (:y param)))))
 ```
 
-The last line above got much cleaner!
+The last line got much cleaner!
+
+### `practice.clj` in step 6
 
 At this moment, her entire `practice.clj` looks like this:
 
@@ -796,7 +808,6 @@ At this moment, her entire `practice.clj` looks like this:
     (assoc state :params (map update-y params))))  ;;
 
 (defn draw [state]
-  ;; drawing blue background and mutiple snowflakes on it
   (q/background-image (:background state))
   (let [params (:params state)]                            ;; changed in step 6
     (dotimes [n 3]                                         ;;
@@ -838,16 +849,65 @@ This would be a big challenge to her.
 
 ### step 7-1 Add swing parameter to initial **state**
 
-To write this feature, she changed the initial state to this:
+Clara already knew from her experience on y value: different swing parameters
+to three x values would give her nice swing motion.
+She changed the initial **state** to have swing parameter like this:
 
 ```clojure
-[{:x 10 :swing 1 :y 10 :speed 1}
+[{:x 10  :swing 1 :y 10  :speed 1}
  {:x 200 :swing 3 :y 100 :speed 4}
- {:x 390 :swing 2 :y 50 :speed 2}]
+ {:x 390 :swing 2 :y 50  :speed 2}]
 ```
 
-The map got a new `:swing` key, which holds a range of left and right
-from a current position.
+The `swing` parameters should work to give different ranges between
+leftmost and rightmost of the curve.
+
+![swing of curve](images/curve-swing.png)
+
+
+Her `setup` function became like this:
+
+```clojure
+(defn setup []
+  (q/smooth)
+  {:flake (q/load-image "images/white_flake.png")
+   :background (q/load-image "images/blue_background.png")
+   :params [{:x 10  :swing 1 :y 10  :speed 1}
+            {:x 200 :swing 3 :y 100 :speed 4}
+            {:x 390 :swing 2 :y 50  :speed 2}]})
+```
+
+### step 7-2 Update x values in maps in the vector
+
+Updating x values were quite similar to the one for y values.
+Like Clara added the `update-y` function, she was about to write
+`update-x` function. But she stopped and thought, "How can I calculate
+updated x values?" sketching a curve in her mind.
+
+She went to Quil api document and scanned the functions thinking some
+might have helped her. She found
+[`sin`](http://quil.info/api/math/trigonometry#sin) function which
+was to calculate the sine of an angle. Also she recalled what was the shape
+of sine curve.
+
+The curve she want had roughly the shape of:
+
+```
+x = sin(y)
+```
+
+If she considered the size of window, a couple more parameters were
+needed to make swing look nice, for example:
+
+```
+x = x + a * sin(y/b)
+```
+
+The parameter `a` exactly works as the `swing` she added to **state**.
+When the `swing` is 1 and 3;
+
+![swing is 1](images/1-sin-x.png)  ![swing is 3](images/3-sin-x.png)
+
 
 This means that the updated `x` parameter will have a value between
 the current `x` parameter + `swing` and the current `x` parameter -
