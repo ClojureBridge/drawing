@@ -877,7 +877,7 @@ Her `setup` function became like this:
             {:x 390 :swing 2 :y 50  :speed 2}]})
 ```
 
-### step 7-2 Update x values in maps in the vector
+### step 7-2 Calculate x values to swing snowflakes
 
 Updating x values were quite similar to the one for y values.
 Like Clara added the `update-y` function, she was about to write
@@ -945,39 +945,36 @@ predicate (comparison). Instead of `if`, she used `cond` which allowed
 her to handle multiple comparisons.
 
 
+### step 7-3 Update x and y values in maps in the vector
 
-
-This `update-x` function hinted to her that she could refactor the
-update function and write an `update-y` function. The below is the
-`update-y` function.
-
-```clojure
-(defn update-y
-  [y speed]
-  (if (>= y (q/height))
-    0
-    (+ y speed)))
-```
-
-Lastly, she rewrote the `update` function.
-
-She could still use `assoc`, but it would be like this:
-
-```
-(assoc (assoc p :y (update-y (:y p) (:speed p))) :x (update-x (:x p) (:swing p)))
-```
-
-She remembered that there was another function for maps. It was
-`merge`, which was appeared in
-[More Functions](https://github.com/ClojureBridge/curriculum/blob/master/outline/functions2.md).
-
-Using `merge`, her `update` function turned into this:
+Clara got `update-y` and `update-x` functions. The next step would be
+to use these functions to update x and y values in maps in the vector.
+This would not be a big deal for her anymore. Tricky thing was it
+needed after updating y values in maps, it should update x values in
+the same maps. Luckily, Clojure's `let` binding treats this sort of
+value changes well. Within `let`, each binding is evaluated from the
+first to last one by one. The `update` function turned to this:
 
 ```clojure
 (defn update [state]
-  (for [p state]
-    (merge p {:x (update-x (:x p) (:swing p)) :y (update-y (:y p) (:speed p))})))
+  (let [params  (:params state)
+        params (map update-y params)
+        params (map update-x params)]
+    (assoc state :params params)))
 ```
+
+The first binding assigns params vector to a name, `params`. The second
+binding updates y values in maps in the vector and assigns to the
+name, `params`. The third binding updates x values in the maps in
+vector and assigns to the name, `param`. When `param` comes to the
+body of `let` function, in other words, the line of `assoc`, both x
+and y values are updated.
+
+These were all to swing the snowflakes. She could use `draw` function
+as it was.
+
+
+### `practice.clj` in step 7
 
 At this point, her entire `practice.clj` looks like this:
 
@@ -990,36 +987,36 @@ At this point, her entire `practice.clj` looks like this:
   (q/smooth)
   {:flake (q/load-image "images/white_flake.png")
    :background (q/load-image "images/blue_background.png")
-   :params [{:x 10  :swing 1 :y 10  :speed 1}
-            {:x 200 :swing 3 :y 100 :speed 4}
-            {:x 390 :swing 2 :y 50  :speed 2}]})
+   :params [{:x 10  :swing 1 :y 10  :speed 1}       ;; swing was added in step 7-1
+            {:x 200 :swing 3 :y 100 :speed 4}       ;;
+            {:x 390 :swing 2 :y 50  :speed 2}]})    ;;
 
+;; this update-x function was added in step 7-2
 (defn update-x
   [m]
   (let [x (:x m)
         swing (:swing m)
         y (:y m)]
     (cond
-     (< x 0) (assoc m :x (q/width))                                  ;; too left
-     (< x (q/width)) (update-in m [:x] + (* swing (q/sin (/ y 50)))) ;; within frame
-     :else (assoc m :x 0))))                                         ;; too right
+     (< x 0) (assoc m :x (q/width))
+     (< x (q/width)) (update-in m [:x] + (* swing (q/sin (/ y 50))))
+     :else (assoc m :x 0))))
 
 (defn update-y
   [m]
   (let [y (:y m)
         speed (:speed m)]
-    (if (>= y (q/height))           ;; y is greater than or equal to image height?
-      (assoc m :y 0)                ;; true - get it back to the 0 (top)
-      (update-in m [:y] + speed)))) ;; false - add y value and speed
+    (if (>= y (q/height))
+      (assoc m :y 0)
+      (update-in m [:y] + speed))))
 
 (defn update [state]
   (let [params  (:params state)
         params (map update-y params)
-        params (map update-x params)]
+        params (map update-x params)]               ;; added in step 7-3
     (assoc state :params params)))
 
 (defn draw [state]
-  ;; drawing blue background and mutiple snowflakes on it
   (q/background-image (:background state))
   (let [params (:params state)]
     (dotimes [n 3]
@@ -1036,13 +1033,12 @@ At this point, her entire `practice.clj` looks like this:
   :middleware [m/fun-mode])
 ```
 
-(frame-rate has been changed to 30)
-
 When Clara ran this code, she saw snowflakes were falling down,
-swinging left and right randomly.
+swinging left and right tracing sine curve.
+"Cool!" she shouted with joy.
 
-Even though there were a couple of problems as well as room for more
-refactoring, Clara was satified with her app. Moreover, she started
+Still, she could a couple more improvements including refactoring,
+Clara was satisfied with her app. Moreover, she started
 thinking about her next, more advanced app in Clojure!
 
 The End.
