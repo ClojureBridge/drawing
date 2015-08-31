@@ -24,12 +24,13 @@ lein new quil drawing
 This should create a directory structure that looks like this:
 
 ```
-| LICENSE
-| README.md
-| project.clj
-| src
-| | drawing
-| | | core.clj
+drawing
+├── LICENSE
+├── README.md
+├── project.clj
+└── src
+    └── drawing
+        └── core.clj
 ```
 
 There's nothing inherently special or Clojure-y about this project
@@ -220,13 +221,16 @@ drawn.
 
   :setup setup
 
-  :draw draw )
+  :draw draw
+
+  :features [:keep-on-top])
 ```
 
 This is our sketch. You can set attributes of the sketch such as the
 title and size. You also tell it what are the names of the setup and
 draw functions. These have to match exactly the function names we used
-above.
+above. The last line is to make our drawing app window keep on top
+of everything else.
 
 Now press `Ctrl + Shift + Enter` (or `Cmd + Shift + Enter`) to
 evaluate the file. Your drawing should appear.
