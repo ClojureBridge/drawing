@@ -48,18 +48,26 @@ skeleton:
 This uses a Clojure library, [Quil](https://github.com/quil/quil), that creates drawings called
 sketches.
 
-Now let's go ahead and actually run the Quil sketch. Open up Light
-Table and do File - Open Folder - find the drawing folder and click
-Upload
+Now let's go ahead and actually run the Quil sketch. Open up Nightcode
+and Import - find the drawing folder and click. Open the file `src/drawing/core.clj`
 
-Press `Ctrl + Shift + Enter` (or `Cmd + Shift + Enter`) to evaluate
-the file.
+On the bottom of the right side, click Run with REPL. This may take a while.
+Once you see the prompt, `user=>`, on the bottom window, click Reload.
+A window will pop up and a circle bouncing, hitting walls within.
+
+You may close the window by clicking a close (X) icon on the top.
+
 
 ## Modify Project
 
-Let's create another Quil sketch. In Light Table, do File - New
-File. Do File - Save File As - Enter lines.clj as the name - and
-select the directory - drawing/src/drawing - then click Save.
+Let's create another Quil sketch. In Nightcode, select drawing on the left side of
+directory tree. click New File on the top of right side window.
+
+
+![Create a new file](images/create-a-new-arrow.png)
+
+Enter `lines.clj` as the name.
+
 
 ## Organization
 
@@ -88,6 +96,9 @@ type the following:
 This line establishes that everything you define in this file will be
 stored within the `drawing.lines` namespace.
 
+Before going forward, click Save on the top menu bar.
+
+
 ## Dependencies
 
 The final part of working with projects is managing their
@@ -98,8 +109,8 @@ To add a dependency, open `project.clj`. You should see a section
 which reads
 
 ```clj
-:dependencies [[org.clojure/clojure "1.6.0"]
-               [quil "2.2.6"]])
+:dependencies [[org.clojure/clojure "1.8.0"]
+               [quil "2.4.0"]])
 ```
 
 This is where our dependencies are listed. All the dependencies we
@@ -121,6 +132,10 @@ There are a couple of things going on here. First, the `:require` in
 `:require` creates an *alias* for a namespace, letting you refer to
 its definitions without having to type out the entire namespace. For
 example, you can use `q/fill` instead of `quil.core/fill`.
+
+Before going forward, don't forget to save the file.
+Click Save on the top menu bar when you change the code.
+
 
 ## Your first real program
 
@@ -160,7 +175,7 @@ so that is where the action of your drawing happens. `sketch` is the
 stage itself. Let's define these functions together, and you will see
 what they do.
 
-In Light Table, in the lines.clj file, add the following after the
+In Nightcode, in the lines.clj file, add the following after the
 closing parenthesis of the ns statement from before.
 
 ```clojure
@@ -187,7 +202,7 @@ Third, we set the color of the lines we will draw with `stroke`. The
 code 255 0 0 represents red. You can [look up RGB codes](http://xona.com/colorlist/) for other
 colors if you would like to try something else.
 
-In Light Table, in the lines.clj file, add the following after the
+In Nightcode, in the lines.clj file, add the following after the
 closing parenthesis of the setup function.
 
 ```clojure
@@ -232,8 +247,11 @@ draw functions. These have to match exactly the function names we used
 above. The last line is to make our drawing app window keep on top
 of everything else.
 
-Now press `Ctrl + Shift + Enter` (or `Cmd + Shift + Enter`) to
+Now click - Run with REPL - Reload -
 evaluate the file. Your drawing should appear.
+
+If not, try - Save file - Stop - Run with REPL - Reload.
+
 
 ### Exercise: Rainbow lines
 Update your drawing so that:
@@ -246,3 +264,4 @@ Bonus: Make each of the four lines a different color.
 Bonus #2: Change the color of the lines based on the mouse position.
 
 Hint: You can browse the [Quil API](http://quil.info/api) for ideas and function definitions.
+Hint: You may think this helpful: the [Quil Cheatsheet](https://github.com/ClojureBridge/curriculum/blob/gh-pages/outline/cheatsheet-quil.md) selected some APIs for ClojureBridge curriculum.
