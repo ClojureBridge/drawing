@@ -51,11 +51,16 @@ sketches.
 Now let's go ahead and actually run the Quil sketch. Open up Nightcode
 and Import - find the drawing folder and click. Open the file `src/drawing/core.clj`
 
-On the bottom of the right side, click Run with REPL. This may take a while.
-Once you see the prompt, `user=>`, on the bottom window, click Reload.
+On the bottom of the right side:
+
+1. click Run with REPL
+2. click Reload
+
+Run with REPL may take a while to startup. Once you see the prompt, `user=>`, on the bottom window, you can click Reload.
+
 A window will pop up and a circle bouncing, hitting walls within.
 
-You may close the window by clicking a close (X) icon on the top.
+You may close the pop up-ed window by clicking a close (X) icon on the top left.
 
 
 ## Modify Project
@@ -247,14 +252,16 @@ draw functions. These have to match exactly the function names we used
 above. The last line is to make our drawing app window keep on top
 of everything else.
 
-Now click - Run with REPL - Reload -
-evaluate the file. Your drawing should appear.
+Now click - Run with REPL - Reload - which evaluates the file.
+Your drawing should appear.
 
 If not, try - Save file - Stop - Run with REPL - Reload.
 
 
 ### Exercise: Rainbow lines
+
 Update your drawing so that:
+
 * the lines are a different color
 * the title is different
 * the lines start at a different place
@@ -264,4 +271,5 @@ Bonus: Make each of the four lines a different color.
 Bonus #2: Change the color of the lines based on the mouse position.
 
 Hint: You can browse the [Quil API](http://quil.info/api) for ideas and function definitions.
+
 Hint: You may think this helpful: the [Quil Cheatsheet](https://github.com/ClojureBridge/curriculum/blob/gh-pages/outline/cheatsheet-quil.md) selected some APIs for ClojureBridge curriculum.
