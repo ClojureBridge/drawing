@@ -272,4 +272,4 @@ Bonus #2: Change the color of the lines based on the mouse position.
 
 Hint: You can browse the [Quil API](http://quil.info/api) for ideas and function definitions.
 
-Hint: You may think this helpful: the [Quil Cheatsheet](https://github.com/ClojureBridge/curriculum/blob/gh-pages/outline/cheatsheet-quil.md) selected some APIs for ClojureBridge curriculum.
+Hint: You may think this helpful: the [Quil Cheatsheet](https://github.com/ClojureBridge/curriculum/blob/gh-pages/outline/cheatsheet-quil.md) for selected APIs for ClojureBridge curriculum.
