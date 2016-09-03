@@ -54,7 +54,7 @@ and Import - find the drawing folder and click. Open the file `src/drawing/core.
 On the bottom of the right side:
 
 1. click Run with REPL
-2. click Reload
+2. click Reload File
 
 Run with REPL may take a while to startup. Once you see the prompt, `user=>`, on the bottom window, you can click Reload.
 
@@ -69,7 +69,7 @@ Let's create another Quil sketch. In Nightcode, select drawing on the left side 
 directory tree. click New File on the top of right side window.
 
 
-![Create a new file](images/create-a-new-arrow.png)
+![Create a new file](images/create-new-file.png)
 
 Enter `lines.clj` as the name.
 
