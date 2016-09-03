@@ -252,10 +252,10 @@ draw functions. These have to match exactly the function names we used
 above. The last line is to make our drawing app window keep on top
 of everything else.
 
-Now click - Run with REPL - Reload - which evaluates the file.
+Now click - Run with REPL - Reload File - which evaluates the file.
 Your drawing should appear.
 
-If not, try - Save file - Stop - Run with REPL - Reload.
+If not, try - Save file - Stop - Run with REPL - Reload File.
 
 
 ### Exercise: Rainbow lines
